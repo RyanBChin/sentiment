@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { SaasLayout, SaasHeader, SaasSidebar, SaasMain } from "@/components/ui/saas-layout";
+import { SaasButton } from "@/components/ui/saas-button";
 import { Badge } from "@/components/ui/badge";
 import MarketOverview from "@/components/market-overview";
 import CommodityDetail from "@/components/commodity-detail";
@@ -7,7 +8,7 @@ import NewsDetail from "@/components/news-detail";
 import Chatbot from "@/components/chatbot";
 import EmailAlerts from "@/components/email-alerts";
 import SentimentAnalysis from "@/components/sentiment-analysis";
-import { ChartBar, Bot, Bell, Menu, Search, BarChart3 } from "lucide-react";
+import { ChartBar, Bot, Bell, Menu, Search, BarChart3, TrendingUp, ArrowLeft, Home } from "lucide-react";
 import type { Commodity, News } from "@shared/schema";
 
 type ActiveSection = 'market' | 'analysis' | 'chatbot' | 'alerts' | 'detail' | 'news';
@@ -76,72 +77,78 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
-      {/* Header Navigation */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-bold text-gray-900">
-                <ChartBar className="inline w-5 h-5 text-blue-600 mr-2" />
-                Market Sentiment
-              </h1>
+    <SaasLayout>
+      <div className="flex h-screen overflow-hidden">
+        {/* Sidebar Navigation */}
+        <SaasSidebar>
+          <div className="p-6">
+            <div className="flex items-center mb-8">
+              <BarChart3 className="w-8 h-8 text-primary mr-3" />
+              <h1 className="text-xl font-bold text-neutral-dark">Market Sentiment</h1>
             </div>
             
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-1">
+            <nav className="space-y-2">
               {tabConfig.map(({ id, label, icon: Icon }) => (
-                <Button
+                <SaasButton
                   key={id}
                   onClick={() => setActiveSection(id as ActiveSection)}
-                  variant={activeSection === id ? "default" : "ghost"}
-                  className="px-4 py-2 font-medium transition-all duration-200"
+                  variant={activeSection === id ? "primary" : "secondary"}
+                  className={`w-full justify-start px-4 py-3 font-medium transition-all ${
+                    activeSection === id ? '' : 'bg-transparent hover:bg-neutral-light text-neutral-dark'
+                  }`}
                 >
-                  <Icon className="w-4 h-4 mr-2" />
+                  <Icon className="w-5 h-5 mr-3" />
                   {label}
-                </Button>
+                </SaasButton>
               ))}
             </nav>
-
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <Menu className="w-5 h-5" />
-            </Button>
-          </div>
-
-          {/* Mobile navigation */}
-          {mobileMenuOpen && (
-            <div className="md:hidden pb-4">
-              <div className="flex flex-col space-y-2">
-                {tabConfig.map(({ id, label, icon: Icon }) => (
-                  <Button
-                    key={id}
-                    onClick={() => {
-                      setActiveSection(id as ActiveSection);
-                      setMobileMenuOpen(false);
-                    }}
-                    variant={activeSection === id ? "default" : "ghost"}
-                    className="justify-start px-4 py-3 font-medium transition-all duration-200"
-                  >
-                    <Icon className="w-4 h-4 mr-2" />
-                    {label}
-                  </Button>
-                ))}
+            
+            {/* Back Navigation */}
+            {(activeSection === 'detail' || activeSection === 'news') && (
+              <div className="mt-6 pt-6 border-t border-neutral">
+                <SaasButton
+                  onClick={() => {
+                    if (activeSection === 'news') {
+                      handleBackToDetail();
+                    } else {
+                      handleBackToMarket();
+                    }
+                  }}
+                  variant="secondary"
+                  className="w-full justify-start px-4 py-3 bg-transparent hover:bg-neutral-light text-neutral-dark"
+                >
+                  <ArrowLeft className="w-5 h-5 mr-3" />
+                  {activeSection === 'news' ? '상세로 돌아가기' : '시장으로 돌아가기'}
+                </SaasButton>
               </div>
-            </div>
-          )}
-        </div>
-      </header>
+            )}
+          </div>
+        </SaasSidebar>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-2 max-w-7xl">
-        {renderActiveSection()}
-      </main>
-    </div>
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <SaasHeader>
+            <div className="flex items-center">
+              <Home className="w-5 h-5 text-primary mr-2" />
+              <span className="text-lg font-semibold text-neutral-dark">
+                {activeSection === 'market' && '시장 현황'}
+                {activeSection === 'analysis' && '센티먼트 분석'}
+                {activeSection === 'chatbot' && 'AI 챗봇'}
+                {activeSection === 'alerts' && '알림 설정'}
+                {activeSection === 'detail' && `${selectedCommodity?.name} 상세`}
+                {activeSection === 'news' && '뉴스 상세'}
+              </span>
+            </div>
+            <Badge variant="secondary" className="bg-secondary text-white">
+              실시간
+            </Badge>
+          </SaasHeader>
+
+          <SaasMain className="overflow-auto">
+            {renderActiveSection()}
+          </SaasMain>
+        </div>
+      </div>
+    </SaasLayout>
   );
 }

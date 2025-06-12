@@ -99,174 +99,222 @@ export default function Chatbot() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 p-4">
-      {/* Today's Market Summary */}
-      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-bold flex items-center">
-            📈 오늘의 시장 한눈에 보기
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-1">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <h4 className="font-semibold text-sm text-gray-800">주요 시장 동향</h4>
-              {sentimentAlert && (
-                <div className="flex items-center space-x-2 p-2 bg-white rounded-lg">
-                  {sentimentAlert.scoreChange >= 0 ? (
-                    <ArrowUp className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <ArrowDown className="w-4 h-4 text-red-600" />
-                  )}
-                  <span className="text-sm">
-                    <strong>{sentimentAlert.commodity}</strong> 센티먼트 <strong>{Math.abs(sentimentAlert.scoreChange)}</strong>점 변동
-                  </span>
+    <div className="h-screen overflow-hidden p-6">
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-3 gap-6 h-full">
+        
+        {/* Left Column - Main Chat Area (2/3 width) */}
+        <div className="col-span-2 flex flex-col">
+          {/* Chat Interface */}
+          <Card className="flex-1 flex flex-col">
+            <CardHeader className="pb-3 flex-shrink-0">
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Bot className="w-5 h-5 mr-2" />
+                  AI 시장 분석 챗봇
                 </div>
-              )}
-              {commodities && commodities.length > 0 && (
-                <div className="flex items-center space-x-2 p-2 bg-white rounded-lg">
-                  {commodities[0].priceChange >= 0 ? (
-                    <TrendingUp className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <TrendingDown className="w-4 h-4 text-red-600" />
-                  )}
-                  <span className="text-sm">
-                    <strong>{commodities[0].name}</strong> 가격 <strong>{Math.abs(commodities[0].priceChange)}%</strong> 
-                    {commodities[0].priceChange >= 0 ? ' 상승' : ' 하락'}
-                  </span>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" onClick={handleSpeechInput}>
+                    <Mic className="w-4 h-4" />
+                  </Button>
                 </div>
-              )}
-            </div>
-            <div className="space-y-3">
-              <h4 className="font-semibold text-sm text-gray-800">🔑 핵심 키워드</h4>
-              <div className="flex flex-wrap gap-2">
-                {['가뭄', '공급부족', '안전자산', '인플레이션', '전기차'].map((keyword, index) => (
-                  <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 text-xs px-2 py-1">
-                    {keyword}
-                  </Badge>
+              </CardTitle>
+            </CardHeader>
+            
+            <CardContent className="flex-1 flex flex-col p-6">
+              {/* Chat Messages - Takes up most space */}
+              <div className="flex-1 mb-4 overflow-y-auto p-4 bg-gray-50 rounded-lg space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-md px-4 py-3 rounded-lg ${
+                        message.type === 'user'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-white text-gray-900 shadow-sm border'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-2">
+                        {message.type === 'bot' && <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-blue-600" />}
+                        {message.type === 'user' && <User className="w-4 h-4 mt-1 flex-shrink-0" />}
+                        <div className="flex-1">
+                          <div 
+                            className="text-sm leading-relaxed"
+                            dangerouslySetInnerHTML={{ 
+                              __html: message.type === 'bot' ? formatMessageContent(message.content) : message.content 
+                            }}
+                          />
+                          <div className="flex items-center justify-between mt-2">
+                            <p className="text-xs opacity-70">
+                              {message.timestamp.toLocaleTimeString('ko-KR', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                            {message.type === 'bot' && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 opacity-60 hover:opacity-100"
+                                onClick={() => handleSpeechOutput(message.content)}
+                              >
+                                <Volume2 className="w-3 h-3" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Conversations */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center">
-            💭 최근 대화 기록
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-1">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {recentConversations.map((conv, index) => (
-              <div key={index} className="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors">
-                <div className="text-sm font-medium text-gray-900 mb-1">Q: {conv.question}</div>
-                <div className="text-xs text-gray-600">A: {conv.answer}</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center text-lg">
-            <Bot className="w-4 h-4 mr-2" />
-            채팅
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Chat Messages Area */}
-          <div className="h-80 overflow-y-auto p-3 bg-gray-50 rounded-lg space-y-3">
-            {messages.map((message) => (
-              <div key={message.id} className="flex items-start space-x-3">
-                {message.type === 'bot' ? (
-                  <>
-                    <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-white" />
+                {chatMutation.isPending && (
+                  <div className="flex justify-start">
+                    <div className="bg-white text-gray-900 px-4 py-3 rounded-lg shadow-sm border">
+                      <div className="flex items-center space-x-2">
+                        <Bot className="w-4 h-4 text-blue-600" />
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                        <span className="text-sm">분석 중...</span>
+                      </div>
                     </div>
-                    <div className="bg-white rounded-lg shadow-sm p-3 max-w-md">
-                      <p className="text-gray-800 text-sm">{message.content}</p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex-1"></div>
-                    <div className="bg-blue-600 text-white rounded-lg shadow-sm p-3 max-w-md">
-                      <p className="text-sm">{message.content}</p>
-                    </div>
-                    <div className="flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
-            ))}
-            
-            {chatMutation.isPending && (
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-white" />
+
+              {/* Suggested Questions - Fixed at bottom */}
+              <div className="mb-4 flex-shrink-0">
+                <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
+                  💡 오늘의 추천 질문
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {suggestedQuestions.map((question, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                      onClick={() => {
+                        setInputValue(question);
+                        handleSubmit(question);
+                      }}
+                      disabled={chatMutation.isPending}
+                    >
+                      {question}
+                    </Button>
+                  ))}
                 </div>
-                <div className="bg-white rounded-lg shadow-sm p-3">
-                  <div className="flex items-center space-x-2">
+              </div>
+
+              {/* Input Area - Fixed at bottom */}
+              <div className="flex space-x-2 flex-shrink-0">
+                <Input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="시장 동향이나 상품 분석에 대해 질문해보세요..."
+                  onKeyPress={(e) => e.key === 'Enter' && !chatMutation.isPending && inputValue.trim() && handleSubmit(inputValue)}
+                  disabled={chatMutation.isPending}
+                  className="flex-1"
+                />
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSpeechInput}
+                  disabled={chatMutation.isPending}
+                  className="px-3"
+                >
+                  <Mic className="w-4 h-4" />
+                </Button>
+                <Button 
+                  onClick={() => handleSubmit(inputValue)} 
+                  disabled={chatMutation.isPending || !inputValue.trim()}
+                  className="px-4"
+                >
+                  {chatMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span className="text-gray-600 text-sm">AI가 답변을 생성하고 있습니다...</span>
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Sidebar Information (1/3 width) */}
+        <div className="space-y-4 overflow-y-auto">
+          
+          {/* Today's Market Summary */}
+          <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-bold flex items-center">
+                📈 오늘의 시장 한눈에 보기
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1">
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-800 mb-2">주요 시장 동향</h4>
+                  {sentimentAlert && (
+                    <div className="flex items-center space-x-2 p-2 bg-white rounded-lg mb-2">
+                      {sentimentAlert.scoreChange >= 0 ? (
+                        <ArrowUp className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <ArrowDown className="w-4 h-4 text-red-600" />
+                      )}
+                      <span className="text-xs">
+                        <strong>{sentimentAlert.commodity}</strong> 센티먼트 <strong>{Math.abs(sentimentAlert.scoreChange)}</strong>점 변동
+                      </span>
+                    </div>
+                  )}
+                  {commodities && commodities.length > 0 && (
+                    <div className="flex items-center space-x-2 p-2 bg-white rounded-lg">
+                      {commodities[0].priceChange >= 0 ? (
+                        <TrendingUp className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <TrendingDown className="w-4 h-4 text-red-600" />
+                      )}
+                      <span className="text-xs">
+                        <strong>{commodities[0].name}</strong> 가격 <strong>{Math.abs(commodities[0].priceChange)}%</strong> 
+                        {commodities[0].priceChange >= 0 ? ' 상승' : ' 하락'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-800 mb-2">🔑 핵심 키워드</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {['가뭄', '공급부족', '안전자산', '인플레이션', '전기차'].map((keyword, index) => (
+                      <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 text-xs px-2 py-1">
+                        {keyword}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Input Area */}
-          <div className="space-y-4">
-            <form onSubmit={handleInputSubmit} className="flex space-x-3">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="예: 이번 주 밀 가격이 왜 떨어졌나요?"
-                className="flex-1"
-                disabled={chatMutation.isPending}
-              />
-              <Button 
-                type="submit" 
-                disabled={!inputValue.trim() || chatMutation.isPending}
-                className="px-6"
-              >
-                {chatMutation.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <>
-                    <span>전송</span>
-                    <Send className="w-4 h-4 ml-2" />
-                  </>
-                )}
-              </Button>
-            </form>
-
-            {/* Quick Questions */}
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600 font-medium">💡 추천 질문:</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestedQuestions.map((question, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSubmit(question)}
-                    disabled={chatMutation.isPending}
-                    className="text-sm hover:bg-blue-50"
-                  >
-                    {question}
-                  </Button>
+          {/* Recent Conversations */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold flex items-center">
+                💭 최근 대화 기록
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1">
+              <div className="space-y-3">
+                {recentConversations.map((conv, index) => (
+                  <div key={index} className="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="text-sm font-medium text-gray-900 mb-1">Q: {conv.question}</div>
+                    <div className="text-xs text-gray-600">A: {conv.answer}</div>
+                  </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -128,42 +128,57 @@ export default function CommodityDetail({ commodity, onBack, onNewsSelect }: Com
                   ))}
                 </div>
               ) : news && news.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs">뉴스 제목</TableHead>
-                      <TableHead className="text-xs">내용 요약</TableHead>
-                      <TableHead className="text-center text-xs">점수</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {news.map((article) => (
-                      <TableRow
-                        key={article.id}
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => onNewsSelect(article)}
-                      >
-                        <TableCell className="py-2">
-                          <p className="text-xs font-medium text-gray-900 line-clamp-1">
-                            {article.title}
-                          </p>
-                        </TableCell>
-                        <TableCell className="py-2">
-                          <p className="text-gray-600 line-clamp-1 text-xs">
-                            {article.snippet}
-                          </p>
-                        </TableCell>
-                        <TableCell className="text-center py-2">
-                          <Badge
-                            className={`text-xs font-medium ${getSentimentBgColor(article.sentimentScore)}`}
-                          >
-                            {article.sentimentScore}
-                          </Badge>
-                        </TableCell>
+                <div className="max-h-64 overflow-y-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs">뉴스 제목</TableHead>
+                        <TableHead className="text-xs">내용 요약</TableHead>
+                        <TableHead className="text-xs">주요 키워드</TableHead>
+                        <TableHead className="text-center text-xs">점수</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {news.map((article) => (
+                        <TableRow
+                          key={article.id}
+                          className="cursor-pointer hover:bg-gray-100 transition-colors"
+                          onClick={() => onNewsSelect(article)}
+                        >
+                          <TableCell className="py-2">
+                            <p className="text-xs font-medium text-gray-900 line-clamp-1 hover:text-blue-600">
+                              {article.title}
+                            </p>
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <p className="text-gray-600 line-clamp-2 text-xs leading-relaxed">
+                              {article.snippet}
+                            </p>
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <div className="flex flex-wrap gap-1">
+                              {article.keywords.slice(0, 2).map((keyword, index) => (
+                                <span
+                                  key={index}
+                                  className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
+                                >
+                                  {keyword}
+                                </span>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center py-2">
+                            <Badge
+                              className={`text-xs font-medium ${getSentimentBgColor(article.sentimentScore)}`}
+                            >
+                              {article.sentimentScore}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               ) : (
                 <p className="text-gray-500 text-center py-2 text-xs">관련 뉴스가 없습니다.</p>
               )}

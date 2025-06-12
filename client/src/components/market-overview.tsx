@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, AlertTriangle, TrendingDown } from "lucide-react";
+import { TrendingUp, AlertTriangle, TrendingDown, AlertCircle } from "lucide-react";
 import type { Commodity } from "@shared/schema";
 
 interface MarketOverviewProps {
@@ -81,57 +81,71 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
         </div>
       )}
 
-      {/* Live Sentiment Cards */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-3">🗂️ 품목별 시황 점수</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-3">
-          {commodities.map((commodity) => (
-            <Card
-              key={commodity.id}
-              className="cursor-pointer hover:shadow-md transition-shadow duration-200"
-              onClick={() => onCommoditySelect(commodity)}
-            >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-semibold">
-                  {commodity.name}
-                </CardTitle>
-                <Badge
-                  className={`${getSentimentBgColor(commodity.sentimentScore)} text-white px-2 py-1 text-xs font-medium`}
-                >
-                  {commodity.sentimentScore}
-                </Badge>
-              </CardHeader>
-              <CardContent className="space-y-2 pt-1">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-600">종가</span>
-                  <span className="text-xs font-semibold text-gray-900">
-                    ${commodity.price.toLocaleString()}
+      {/* Market Overview Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-neutral-dark">시장 현황</h1>
+        <Badge className="bg-secondary text-white px-4 py-2 text-sm font-medium">
+          실시간 업데이트
+        </Badge>
+      </div>
+
+      {/* Commodity Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        {commodities.map((commodity) => (
+          <div 
+            key={commodity.id} 
+            className="saas-card cursor-pointer group"
+            onClick={() => onCommoditySelect(commodity)}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-lg text-neutral-dark">{commodity.name}</h2>
+              <div className={`w-4 h-4 rounded-full ${
+                commodity.sentimentScore >= 70 ? 'bg-sentiment-positive' : 
+                commodity.sentimentScore >= 50 ? 'bg-warning' : 'bg-sentiment-negative'
+              }`}></div>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-neutral font-medium">센티먼트 점수</span>
+                <span className="text-2xl font-bold text-primary">{commodity.sentimentScore.toFixed(1)}</span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-neutral font-medium">현재가격</span>
+                <span className="text-lg font-semibold text-neutral-dark">
+                  {commodity.price.toLocaleString()}
+                </span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-neutral font-medium">변동률</span>
+                <div className="flex items-center">
+                  <span className={`text-lg font-bold ${
+                    commodity.priceChange >= 0 ? 'text-sentiment-positive' : 'text-sentiment-negative'
+                  }`}>
+                    {commodity.priceChange >= 0 ? '+' : ''}{commodity.priceChange.toFixed(2)}%
                   </span>
+                  {commodity.priceChange >= 0 ? (
+                    <TrendingUp className="w-4 h-4 ml-1 text-sentiment-positive" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4 ml-1 text-sentiment-negative" />
+                  )}
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-600">변동</span>
-                  <span className={`text-xs font-semibold ${getChangeColor(commodity.priceChange)}`}>
-                    {getChangeSymbol(commodity.priceChange)}{Math.abs(commodity.priceChange)}%
+              </div>
+            </div>
+            
+            <div className="mt-4 pt-4 border-t border-neutral">
+              <div className="flex flex-wrap gap-2">
+                {commodity.keywords.slice(0, 2).map((keyword, index) => (
+                  <span key={index} className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">
+                    {keyword}
                   </span>
-                </div>
-                <div className="pt-1 border-t border-gray-100">
-                  <p className="text-xs text-gray-600 mb-1">주요 키워드</p>
-                  <div className="flex flex-wrap gap-1">
-                    {commodity.keywords.slice(0, 2).map((keyword, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="bg-blue-50 text-blue-700 text-xs px-1 py-0"
-                      >
-                        {keyword}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

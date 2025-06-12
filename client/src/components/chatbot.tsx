@@ -330,88 +330,56 @@ export default function Chatbot() {
             </CardContent>
           </Card>
 
-          {/* Related News */}
-          <Card className="flex-1 min-h-0">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold flex items-center">
-                📰 관련 뉴스
-              </CardTitle>
+          {/* Latest News Headlines */}
+          <Card className="bg-white rounded-lg shadow p-6 flex-1">
+            <CardHeader className="pb-4 p-0">
+              <CardTitle className="text-lg font-semibold">실시간 뉴스</CardTitle>
             </CardHeader>
-            <CardContent className="pt-1 h-full">
-              <div className="space-y-2 h-full overflow-y-auto" style={{ maxHeight: '300px' }}>
+            <CardContent className="p-0">
+              <div className="space-y-3 max-h-[200px] overflow-y-auto">
                 {[
-                  {
-                    id: 1,
-                    title: "글로벌 밀 공급 부족 우려 심화",
-                    summary: "우크라이나 전쟁 장기화로 밀 수출 차질",
-                    sentiment: "부정적",
-                    time: "2시간 전"
-                  },
-                  {
-                    id: 2,
-                    title: "구리 가격 급등, 전기차 수요 급증",
-                    summary: "중국 전기차 생산량 증가로 구리 수요 폭증",
-                    sentiment: "긍정적",
-                    time: "4시간 전"
-                  },
-                  {
-                    id: 3,
-                    title: "금값 상승세, 인플레이션 우려 확산",
-                    summary: "연준 금리 정책 불확실성으로 안전자산 선호",
-                    sentiment: "중립적",
-                    time: "6시간 전"
-                  },
-                  {
-                    id: 4,
-                    title: "WTI 원유 70달러 돌파 전망",
-                    summary: "OPEC+ 감산 정책으로 공급 제한 지속",
-                    sentiment: "긍정적",
-                    time: "8시간 전"
-                  }
-                ].map((news) => (
-                  <div 
-                    key={news.id} 
-                    className="border rounded-lg p-2 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
-                    onClick={() => {
-                      console.log('Navigate to news:', news.id);
-                    }}
-                  >
-                    <div className="flex justify-between items-start mb-1">
-                      <h5 className="text-xs font-medium text-gray-900 line-clamp-2">{news.title}</h5>
-                      <Badge 
-                        variant="secondary" 
-                        className={`text-xs ml-1 ${
-                          news.sentiment === '긍정적' ? 'bg-green-100 text-green-800' :
-                          news.sentiment === '부정적' ? 'bg-red-100 text-red-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}
-                      >
-                        {news.sentiment}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-gray-600 mb-1">{news.summary}</p>
-                    <p className="text-xs text-gray-500">{news.time}</p>
+                  { title: "글로벌 밀 공급 부족 우려 심화로 가격 급등", time: "2시간 전" },
+                  { title: "구리 가격 급등, 전기차 수요 급증 영향", time: "4시간 전" },
+                  { title: "금값 상승세, 인플레이션 우려 확산", time: "6시간 전" },
+                  { title: "WTI 원유 70달러 돌파 전망", time: "8시간 전" },
+                  { title: "옥수수 선물 가격 변동성 확대", time: "10시간 전" }
+                ].map((news, index) => (
+                  <div key={index} className="text-sm">
+                    <p className="text-gray-900 font-medium leading-tight">
+                      {news.title}
+                    </p>
+                    <p className="text-gray-500 text-xs mt-1">{news.time}</p>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* Recent Conversations */}
-          <Card className="flex-shrink-0">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold flex items-center">
-                💭 최근 대화 기록
-              </CardTitle>
+          {/* Recent Chat History */}
+          <Card className="bg-white rounded-lg shadow p-6">
+            <CardHeader className="pb-4 p-0">
+              <CardTitle className="text-lg font-semibold">최근 대화</CardTitle>
             </CardHeader>
-            <CardContent className="pt-1">
-              <div className="space-y-2" style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                {recentConversations.slice(0, 3).map((conv, index) => (
-                  <div key={index} className="border rounded-lg p-2 bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <div className="text-xs font-medium text-gray-900 mb-1">Q: {conv.question}</div>
-                    <div className="text-xs text-gray-600">A: {conv.answer}</div>
+            <CardContent className="p-0">
+              <div className="space-y-3 max-h-[160px] overflow-y-auto">
+                {recentConversations.map((conversation, index) => (
+                  <div key={index} className="text-sm cursor-pointer hover:bg-gray-50 p-2 rounded">
+                    <p className="text-gray-900 font-medium">
+                      {conversation.question}
+                    </p>
+                    <p className="text-gray-500 text-xs mt-1">
+                      {conversation.answer}
+                    </p>
                   </div>
                 ))}
+                <div className="text-sm cursor-pointer hover:bg-gray-50 p-2 rounded">
+                  <p className="text-gray-900 font-medium">WTI 오일 가격 변동 원인은?</p>
+                  <p className="text-gray-500 text-xs mt-1">지정학적 리스크와 공급 부족</p>
+                </div>
+                <div className="text-sm cursor-pointer hover:bg-gray-50 p-2 rounded">
+                  <p className="text-gray-900 font-medium">구리 시장 전망은 어떤가요?</p>
+                  <p className="text-gray-500 text-xs mt-1">중국 수요 증가로 긍정적</p>
+                </div>
               </div>
             </CardContent>
           </Card>

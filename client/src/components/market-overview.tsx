@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, Trophy } from "lucide-react";
+import { TrendingUp, AlertTriangle, TrendingDown } from "lucide-react";
 import type { Commodity } from "@shared/schema";
 
 interface MarketOverviewProps {
@@ -14,15 +14,18 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
     queryKey: ["/api/commodities"]
   });
 
-  if (isLoading) {
+  const { data: sentimentAlert, isLoading: alertLoading } = useQuery<any>({
+    queryKey: ["/api/sentiment-alert"]
+  });
+
+  if (isLoading || alertLoading) {
     return (
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Skeleton className="h-32" />
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 mb-4">
           <Skeleton className="h-32" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-3">
+          {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-64" />
           ))}
         </div>
@@ -37,9 +40,6 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
       </div>
     );
   }
-
-  const averageScore = commodities.reduce((sum, c) => sum + c.sentimentScore, 0) / commodities.length;
-  const topCommodity = commodities.reduce((max, c) => c.sentimentScore > max.sentimentScore ? c : max);
 
   const getSentimentColor = (score: number) => {
     if (score >= 70) return "text-sentiment-positive";
@@ -63,46 +63,61 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
 
   return (
     <div className="space-y-4">
-      {/* Summary Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-semibold flex items-center">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              📊 평균 점수
-            </CardTitle>
-            <Badge variant="secondary" className="text-xs">실시간</Badge>
-          </CardHeader>
-          <CardContent className="pt-2">
-            <div className={`text-2xl font-bold mb-1 ${getSentimentColor(averageScore)}`}>
-              {averageScore.toFixed(1)}
-            </div>
-            <p className="text-xs text-gray-600">전체 상품 평균 센티먼트</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-semibold flex items-center">
-              <Trophy className="w-4 h-4 mr-2" />
-              🏆 최고 점수 품목
-            </CardTitle>
-            <Badge variant="secondary" className="text-xs">TOP 1</Badge>
-          </CardHeader>
-          <CardContent className="pt-2">
-            <div className="text-lg font-bold text-gray-900 mb-1">
-              {topCommodity.name}
-            </div>
-            <div className={`text-lg font-semibold ${getSentimentColor(topCommodity.sentimentScore)}`}>
-              {topCommodity.sentimentScore}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Sentiment Alert Box */}
+      {sentimentAlert && (
+        <div className="mb-4">
+          <Card className={`${sentimentAlert.scoreChange >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'}`}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold flex items-center">
+                {sentimentAlert.scoreChange >= 0 ? (
+                  <TrendingUp className="w-4 h-4 mr-2 text-blue-600" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 mr-2 text-red-600" />
+                )}
+                📌 센티먼트 급변 품목 알림
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    📉 {sentimentAlert.commodity} ({sentimentAlert.englishName})
+                  </h3>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <span className={`text-sm font-semibold ${sentimentAlert.scoreChange >= 0 ? 'text-blue-700' : 'text-red-700'}`}>
+                      📊 센티먼트 변동: {sentimentAlert.scoreChange >= 0 ? '+' : ''}{sentimentAlert.scoreChange} pts
+                    </span>
+                    <span className="text-xs text-gray-600">
+                      ({sentimentAlert.from} → {sentimentAlert.to})
+                    </span>
+                  </div>
+                </div>
+                <Badge 
+                  className={`${sentimentAlert.scoreChange >= 0 ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} px-3 py-1`}
+                >
+                  3일간
+                </Badge>
+              </div>
+              
+              <div className="border-t pt-3">
+                <h4 className="text-sm font-medium text-gray-900 mb-1">
+                  📰 최신 뉴스
+                </h4>
+                <p className="text-sm font-medium text-gray-800 mb-1">
+                  {sentimentAlert.headline}
+                </p>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  {sentimentAlert.summary}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Live Sentiment Cards */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-3">실시간 시황 점수</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-3">🗂️ 품목별 시황 점수</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-3">
           {commodities.map((commodity) => (
             <Card

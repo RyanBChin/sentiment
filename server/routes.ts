@@ -127,6 +127,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get sentiment alert
+  app.get("/api/sentiment-alert", async (req, res) => {
+    try {
+      const alert = await storage.getSentimentAlert();
+      res.json(alert);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch sentiment alert" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

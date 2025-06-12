@@ -21,6 +21,7 @@ export interface IStorage {
   getCommodities(): Promise<Commodity[]>;
   getCommodity(id: number): Promise<Commodity | undefined>;
   getCommodityHistory(commodityId: number): Promise<CommodityHistory[]>;
+  getSentimentAlert(): Promise<any>;
   
   // News
   getNewsByCommodity(commodityId: number): Promise<News[]>;
@@ -331,6 +332,43 @@ export class MemStorage implements IStorage {
 
   async getEmailAlerts(): Promise<EmailAlert[]> {
     return Array.from(this.emailAlerts.values());
+  }
+
+  async getSentimentAlert(): Promise<any> {
+    // Calculate sentiment changes over the last 3 days for each commodity
+    const alerts = [];
+    
+    Array.from(this.commodityHistory.entries()).forEach(([commodityId, history]) => {
+      if (history.length >= 4) {
+        const latest = history[history.length - 1];
+        const threeDaysAgo = history[history.length - 4]; // 3 days ago
+        const change = latest.sentimentScore - threeDaysAgo.sentimentScore;
+        
+        const commodity = this.commodities.get(commodityId);
+        const news = Array.from(this.news.values()).filter(n => n.commodityId === commodityId);
+        const latestNews = news.length > 0 ? news[0] : null;
+        
+        if (commodity) {
+          alerts.push({
+            commodityId,
+            commodity: commodity.name,
+            englishName: commodity.englishName,
+            scoreChange: Number(change.toFixed(1)),
+            from: threeDaysAgo.sentimentScore,
+            to: latest.sentimentScore,
+            headline: latestNews?.title || `${commodity.name} 시장 동향`,
+            summary: latestNews?.snippet || `${commodity.name}의 시장 센티먼트가 변화하고 있습니다.`
+          });
+        }
+      }
+    });
+    
+    // Return the commodity with the biggest absolute change
+    const biggestChange = alerts.reduce((max, current) => 
+      Math.abs(current.scoreChange) > Math.abs(max.scoreChange) ? current : max
+    );
+    
+    return biggestChange;
   }
 }
 

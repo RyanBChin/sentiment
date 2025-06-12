@@ -5,12 +5,32 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        'inter': ['Inter', 'sans-serif'],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        // Modern SaaS Design System Colors
+        primary: '#246BFD',
+        secondary: '#22C55E',
+        danger: '#EF4444',
+        warning: '#FACC15',
+        neutral: {
+          light: '#F8F9FA',
+          DEFAULT: '#E5E7EB',
+          dark: '#1F2937',
+        },
+        sentiment: {
+          positive: '#3B82F6',
+          neutral: '#9CA3AF',
+          negative: '#EF4444',
+        },
+        'card-bg': '#FFFFFF',
+        'background-main': '#F9FAFB',
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {

@@ -62,56 +62,22 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8 p-6">
       {/* Sentiment Alert Box */}
       {sentimentAlert && (
-        <div className="mb-4">
-          <Card className={`${sentimentAlert.scoreChange >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'}`}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center">
-                {sentimentAlert.scoreChange >= 0 ? (
-                  <TrendingUp className="w-4 h-4 mr-2 text-blue-600" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 mr-2 text-red-600" />
-                )}
-                📌 센티먼트 급변 품목 알림
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-1">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    📉 {sentimentAlert.commodity} ({sentimentAlert.englishName})
-                  </h3>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className={`text-sm font-semibold ${sentimentAlert.scoreChange >= 0 ? 'text-blue-700' : 'text-red-700'}`}>
-                      📊 센티먼트 변동: {sentimentAlert.scoreChange >= 0 ? '+' : ''}{sentimentAlert.scoreChange} pts
-                    </span>
-                    <span className="text-xs text-gray-600">
-                      ({sentimentAlert.from} → {sentimentAlert.to})
-                    </span>
-                  </div>
-                </div>
-                <Badge 
-                  className={`${sentimentAlert.scoreChange >= 0 ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} px-3 py-1`}
-                >
-                  3일간
-                </Badge>
-              </div>
-              
-              <div className="border-t pt-3">
-                <h4 className="text-sm font-medium text-gray-900 mb-1">
-                  📰 최신 뉴스
-                </h4>
-                <p className="text-sm font-medium text-gray-800 mb-1">
-                  {sentimentAlert.headline}
-                </p>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  {sentimentAlert.summary}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="saas-card bg-gradient-to-r from-primary to-blue-600 text-white border-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold mb-2 text-white">센티먼트 알림</h3>
+              <p className="text-blue-100 text-lg">
+                {sentimentAlert.commodity}: 점수 {sentimentAlert.currentScore} 
+                <span className={`ml-2 font-semibold ${sentimentAlert.scoreChange >= 0 ? 'text-green-200' : 'text-red-200'}`}>
+                  ({sentimentAlert.scoreChange >= 0 ? '+' : ''}{sentimentAlert.scoreChange})
+                </span>
+              </p>
+            </div>
+            <AlertCircle className="w-10 h-10 text-white" />
+          </div>
         </div>
       )}
 

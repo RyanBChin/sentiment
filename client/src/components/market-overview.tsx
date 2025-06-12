@@ -124,6 +124,79 @@ export default function MarketOverview({ onCommoditySelect, onNewsSelect }: Mark
         </div>
       )}
 
+      {/* Latest News Section */}
+      {latestNews && latestNews.length > 0 && (
+        <div className="mb-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-bold flex items-center">
+                📰 최신 뉴스
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {latestNews.slice(0, 4).map((article) => {
+                  const getCommodityIcon = (commodityId: number) => {
+                    switch(commodityId) {
+                      case 1: return "🌽";
+                      case 2: return "🌾";
+                      case 3: return "🔶";
+                      case 4: return "🛢️";
+                      case 5: return "🥇";
+                      default: return "📈";
+                    }
+                  };
+                  
+                  const getSentimentBadgeColor = (score: number) => {
+                    if (score >= 70) return "bg-green-100 text-green-800";
+                    if (score >= 50) return "bg-gray-100 text-gray-800";
+                    return "bg-red-100 text-red-800";
+                  };
+
+                  return (
+                    <div
+                      key={article.id}
+                      className="border rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => onNewsSelect && onNewsSelect(article)}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 flex-1 pr-2">
+                          {getCommodityIcon(article.commodityId || 1)} {article.title}
+                        </h4>
+                        <Badge className={`text-xs font-medium ${getSentimentBadgeColor(article.sentimentScore)} flex-shrink-0`}>
+                          {article.sentimentScore}
+                        </Badge>
+                      </div>
+                      
+                      <p className="text-xs text-gray-600 line-clamp-2 mb-2">
+                        {article.snippet}
+                      </p>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap gap-1">
+                          {article.keywords.slice(0, 2).map((keyword, index) => (
+                            <span
+                              key={index}
+                              className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
+                            >
+                              {keyword}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          <span>{new Date(article.publishedAt).toLocaleDateString('ko-KR')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Live Sentiment Cards */}
       <div>
         <h2 className="text-xl font-bold text-gray-900 mb-3">🗂️ 품목별 시황 점수</h2>

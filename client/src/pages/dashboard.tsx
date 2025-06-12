@@ -46,7 +46,7 @@ export default function Dashboard() {
   const renderActiveSection = () => {
     switch (activeSection) {
       case 'market':
-        return <MarketOverview onCommoditySelect={handleCommoditySelect} />;
+        return <MarketOverview onCommoditySelect={handleCommoditySelect} onNewsSelect={handleNewsSelect} />;
       case 'detail':
         return (
           <CommodityDetail

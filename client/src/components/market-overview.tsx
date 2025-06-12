@@ -121,12 +121,12 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
             <SaasCardContent>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-neutral font-medium">센티먼트 점수</span>
-                <span className="text-2xl font-bold text-primary">{commodity.sentimentScore.toFixed(1)}</span>
+                <span className="text-2xl font-bold text-neutral-dark">{commodity.sentimentScore.toFixed(1)}</span>
               </div>
               
               <div className="flex items-center justify-between">
                 <span className="text-sm text-neutral font-medium">현재가격</span>
-                <span className="text-lg font-semibold text-neutral-dark">
+                <span className="text-lg font-bold text-neutral-dark">
                   {commodity.price.toLocaleString()}
                 </span>
               </div>
@@ -134,9 +134,7 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
               <div className="flex items-center justify-between">
                 <span className="text-sm text-neutral font-medium">변동률</span>
                 <div className="flex items-center">
-                  <span className={`text-lg font-bold ${
-                    commodity.priceChange >= 0 ? 'text-sentiment-positive' : 'text-sentiment-negative'
-                  }`}>
+                  <span className={`text-lg font-bold text-neutral-dark`}>
                     {commodity.priceChange >= 0 ? '+' : ''}{commodity.priceChange.toFixed(2)}%
                   </span>
                   {commodity.priceChange >= 0 ? (
@@ -150,7 +148,7 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
               <div className="pt-3 border-t border-neutral">
                 <div className="flex flex-wrap gap-2">
                   {commodity.keywords.slice(0, 2).map((keyword, index) => (
-                    <span key={index} className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">
+                    <span key={index} className="bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full">
                       {keyword}
                     </span>
                   ))}

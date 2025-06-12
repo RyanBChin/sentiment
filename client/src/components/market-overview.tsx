@@ -5,8 +5,7 @@ import { SaasPageHeader, SaasGrid } from "@/components/ui/saas-layout";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, AlertTriangle, TrendingDown, AlertCircle } from "lucide-react";
-import TrendSnapshot from "@/components/trend-snapshot";
-import TopGainersLosers from "@/components/top-gainers-losers";
+import TopMovers from "@/components/top-movers";
 import LatestNewsFeed from "@/components/latest-news-feed";
 import type { Commodity } from "@shared/schema";
 
@@ -135,7 +134,7 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-base text-neutral-dark font-semibold">변동률</span>
+                <span className="text-base text-neutral-dark font-semibold">가격 변동률</span>
                 <div className="flex items-center">
                   <span className={`text-lg font-bold text-neutral-dark`}>
                     {commodity.priceChange >= 0 ? '+' : ''}{commodity.priceChange.toFixed(2)}%
@@ -162,11 +161,8 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
         ))}
       </SaasGrid>
 
-      {/* Trend Snapshot Section */}
-      <TrendSnapshot />
-
-      {/* Top Gainers & Losers Section */}
-      <TopGainersLosers />
+      {/* Top Movers Section with Timeframe Selector */}
+      <TopMovers />
 
       {/* Latest News Feed Section */}
       <LatestNewsFeed onNewsSelect={(newsId) => {

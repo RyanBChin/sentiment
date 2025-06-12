@@ -1,0 +1,113 @@
+📄 MarketOverview v3 — Final SaaS Expansion Spec
+Project: MarketOverview v3 — Consolidated SaaS Dashboard Optimization
+Audience: Development Team / Zapier Team / Designers
+Date: 2025-06-13
+
+1️⃣ 🔧 Background
+This spec consolidates the previous MarketOverview expansion designs into a fully optimized SaaS-level dashboard layout.
+
+The goal is to:
+
+Remove redundant or hard-to-interpret elements (i.e., 7-day sentiment sparkline snapshot)
+
+Consolidate trend information into a unified, highly-usable Top Movers module
+
+Introduce user-controlled timeframe filtering for better analytical control
+
+Fully align with professional SaaS dashboard standards (TradingView / Koyfin / Bloomberg Lite)
+
+2️⃣ 🔎 Existing Components (Maintained)
+Section	Description
+Sentiment Alert	SaasCard (variant="gradient")
+Page Header	SaasPageHeader ("Market Overview")
+Commodity Summary Cards	SaasGrid cols={5} — Commodity name, sentiment score, price, price change, keywords
+Latest News Feed	Vertical list (10 items)
+
+3️⃣ 🔧 New Consolidated Module: Top Movers (Gainers & Losers)
+Purpose
+Provide users a quick summary of the best- and worst-performing commodities over multiple periods.
+
+Components
+Section	Content	Example
+Top Gainers	Top 3 gainers for selected period	WTI +4.5%, Corn +3.2%
+Top Losers	Top 3 losers for selected period	Copper -2.8%, Wheat -1.1%
+
+Design
+Split Card Layout: Left → Gainers, Right → Losers
+
+Each item displays:
+
+Commodity name + icon (🌽, 🛢, 🔧 etc.)
+
+% price change
+
+Direction icon (TrendingUp, TrendingDown)
+
+Color Coding
+Change	Color
+Positive	text-green-500
+Negative	text-red-500
+
+NEW Feature: Timeframe Selector
+Element	Description
+Control	Dropdown menu or tab selector
+Position	Top-right corner of the Top Movers card
+Options	1 Day, 7 Days, 30 Days, 1 Year
+Default Selection	1 Day
+Behavior	Updates Top Gainers & Losers dynamically based on selected period
+
+Example UI:
+html
+복사
+편집
+<select class="rounded px-3 py-1 border text-neutral-dark">
+  <option>1 Day</option>
+  <option>7 Days</option>
+  <option>30 Days</option>
+  <option>1 Year</option>
+</select>
+UX Benefits:
+Fully eliminates redundancy with previous 7-day sparkline snapshot
+
+Users receive much more actionable insight
+
+Aligns fully with professional market analysis UX patterns
+
+Significantly improves SaaS-level clarity & simplicity
+
+4️⃣ 🔧 Updated Full Layout Flow
+scss
+복사
+편집
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sentiment Alert (SaasCard gradient)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Page Header (Market Overview)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Commodity Summary Cards (SaasGrid cols=5)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Top Movers (Gainers & Losers) [with Period Selector]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Latest News Feed (10 items)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5️⃣ 🔧 Suggested Component Structure
+Component Name	Description
+TopMovers.tsx	Consolidated Gainers/Losers + Period Selector
+LatestNewsFeed.tsx	News feed remains (10 latest articles)
+Existing Components	SentimentAlert, CommoditySummary remain unchanged
+
+6️⃣ 🔧 API Requirements
+Endpoint	Purpose
+/api/commodities	Commodity summary
+/api/top-movers?period=1d/7d/30d/1y	Gainers/Losers data (new consolidated API)
+/api/latest-news?limit=10	News feed data
+
+7️⃣ 🔧 Implementation Priority
+Phase	Task
+Phase 1	Build new TopMovers component
+Phase 2	Integrate timeframe selector logic
+Phase 3	Clean up old Trend Snapshot logic
+Phase 4	Final UI polish, spacing, consistency
+
+✅ This spec is fully production-ready and can be handed off directly to development/design.
+

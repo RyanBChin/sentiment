@@ -71,6 +71,7 @@ export interface IStorage {
   
   // Market Overview Extensions
   getTopGainersLosers(): Promise<any>;
+  getTopMovers(period: string): Promise<any>;
   getLatestNewsFeed(limit?: number): Promise<any[]>;
 }
 
@@ -665,14 +666,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTopGainersLosers(): Promise<any> {
-    // Get latest 7 days of price data for all commodities
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    return this.getTopMovers('7d');
+  }
+
+  async getTopMovers(period: string): Promise<any> {
+    // Calculate days based on period
+    let days = 1;
+    switch (period) {
+      case '1d': days = 1; break;
+      case '7d': days = 7; break;
+      case '30d': days = 30; break;
+      case '1y': days = 365; break;
+      default: days = 1;
+    }
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
     
     const priceData = await db
       .select()
       .from(priceHistory)
-      .where(gte(priceHistory.date, sevenDaysAgo.toISOString().split('T')[0]))
       .orderBy(priceHistory.commodity, desc(priceHistory.date));
 
     // Calculate percentage changes

@@ -154,6 +154,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/top-movers", async (req, res) => {
+    try {
+      const period = req.query.period || '1d';
+      const data = await storage.getTopMovers(period as string);
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch top movers data" });
+    }
+  });
+
   app.get("/api/latest-news-feed", async (req, res) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;

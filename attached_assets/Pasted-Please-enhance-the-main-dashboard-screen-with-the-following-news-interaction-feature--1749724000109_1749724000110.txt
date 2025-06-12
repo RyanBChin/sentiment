@@ -1,0 +1,92 @@
+Please enhance the main dashboard screen with the following news interaction feature:
+
+---
+
+🔹 [1] Add a “최신 뉴스” section on the main screen
+
+- Show a horizontal list or vertical list of 3–5 latest news items
+- For each item, display:
+  - 뉴스 제목
+  - 짧은 요약 (1~2줄)
+  - 품목 이름 또는 키워드 태그 (optional)
+
+Use dummy data like:
+
+```json
+[
+  {
+    "title": "Corn Prices Surge on Dry Weather",
+    "summary": "Corn futures rise due to Midwest drought concerns.",
+    "commodity": "옥수수",
+    "score": 89.5,
+    "keywords": ["가뭄", "수출증가"]
+  },
+  {
+    "title": "Oil Prices Lifted by OPEC Decision",
+    "summary": "WTI crude edges higher following supply cuts.",
+    "commodity": "WTI 원유",
+    "score": 58.4,
+    "keywords": ["OPEC", "재고감소"]
+  }
+]
+🔹 [2] Make each news item clickable
+
+When a user clicks the news title or summary, navigate to the 뉴스 상세 보기 (3rd-level article view)
+
+That detailed view should show:
+
+뉴스 제목
+
+센티멘트 점수
+
+주요 키워드 (badge style)
+
+전체 기사 본문 (lorem ipsum OK)
+
+Use JavaScript to pass or load the clicked article content (you can use local state, or hardcoded dataset for now).
+
+🔹 [3] Visual & UX
+
+Style each news preview using Tailwind cards or simple flex layout:
+
+hover:bg-gray-100, cursor-pointer, transition
+
+Limit text overflow with line-clamp-2 if needed
+
+Use onClick or addEventListener to route to hidden detailed view section (display: none → block)
+
+🔹 [4] Optional Enhancements
+
+Tag the news item with associated commodity icon or label (e.g., 🌽, 🛢️, 🥖)
+
+Use Tailwind color accents based on sentiment score (green for high, red for low)
+
+✅ Summary
+
+Add a dynamic “최신 뉴스” preview list on the main page.
+Clicking a news preview should route to the corresponding full article page with title, score, keywords, and full content rendered cleanly.
+
+Use dummy data for now and simulate page routing with JS show/hide or anchor-based navigation.
+
+yaml
+Copy
+Edit
+
+---
+
+### 📝 예시 결과 화면 (요약)
+
+**메인 화면 – 최신 뉴스 리스트**
+📰 Corn Prices Surge on Dry Weather
+🌽 옥수수 | 가뭄, 수출증가 | 점수: 89.5
+→ 클릭 시: 상세 뉴스 페이지 이동
+
+markdown
+Copy
+Edit
+
+**상세 뉴스 화면 (3단계)**
+제목: Corn Prices Surge on Dry Weather
+점수: 89.5
+키워드: [가뭄] [수출증가]
+본문: Lorem ipsum dolor sit amet...

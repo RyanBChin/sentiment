@@ -26,6 +26,7 @@ export interface IStorage {
   // News
   getNewsByCommodity(commodityId: number): Promise<News[]>;
   getNews(id: number): Promise<News | undefined>;
+  getLatestNews(): Promise<News[]>;
   
   // Chat
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
@@ -332,6 +333,14 @@ export class MemStorage implements IStorage {
 
   async getEmailAlerts(): Promise<EmailAlert[]> {
     return Array.from(this.emailAlerts.values());
+  }
+
+  async getLatestNews(): Promise<News[]> {
+    // Get latest 5 news items across all commodities
+    const allNews = Array.from(this.news.values());
+    return allNews
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+      .slice(0, 5);
   }
 
   async getSentimentAlert(): Promise<any> {

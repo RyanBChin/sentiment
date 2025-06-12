@@ -137,6 +137,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get latest news
+  app.get("/api/latest-news", async (req, res) => {
+    try {
+      const news = await storage.getLatestNews();
+      res.json(news);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch latest news" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -2,14 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, AlertTriangle, TrendingDown } from "lucide-react";
-import type { Commodity } from "@shared/schema";
+import { TrendingUp, AlertTriangle, TrendingDown, Calendar, Tag } from "lucide-react";
+import type { Commodity, News } from "@shared/schema";
 
 interface MarketOverviewProps {
   onCommoditySelect: (commodity: Commodity) => void;
+  onNewsSelect?: (news: News) => void;
 }
 
-export default function MarketOverview({ onCommoditySelect }: MarketOverviewProps) {
+export default function MarketOverview({ onCommoditySelect, onNewsSelect }: MarketOverviewProps) {
   const { data: commodities, isLoading } = useQuery<Commodity[]>({
     queryKey: ["/api/commodities"]
   });
@@ -18,11 +19,19 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
     queryKey: ["/api/sentiment-alert"]
   });
 
-  if (isLoading || alertLoading) {
+  const { data: latestNews, isLoading: newsLoading } = useQuery<News[]>({
+    queryKey: ["/api/latest-news"]
+  });
+
+  if (isLoading || alertLoading || newsLoading) {
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-4 mb-4">
           <Skeleton className="h-32" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          <Skeleton className="h-48" />
+          <Skeleton className="h-48" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-3">
           {Array.from({ length: 5 }).map((_, i) => (

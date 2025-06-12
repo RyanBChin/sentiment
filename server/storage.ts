@@ -417,7 +417,56 @@ export class MemStorage implements IStorage {
 // Database Storage Implementation
 export class DatabaseStorage implements IStorage {
   async getCommodities(): Promise<Commodity[]> {
-    return await db.select().from(commodities);
+    // Get commodities with data from daily_market_summary and price_history
+    const result = await db
+      .select({
+        id: commodities.id,
+        name: commodities.name,
+        englishName: dailyMarketSummary.commodity,
+        sentimentScore: dailyMarketSummary.dailySentimentScore,
+        price: priceHistory.closingPrice,
+        priceChange: commodities.priceChange, // Will calculate this separately
+        keywords: dailyMarketSummary.dailyKeywords,
+      })
+      .from(commodities)
+      .leftJoin(
+        dailyMarketSummary,
+        eq(commodities.name, dailyMarketSummary.commodity)
+      )
+      .leftJoin(
+        priceHistory,
+        eq(commodities.name, priceHistory.commodity)
+      )
+      .where(eq(dailyMarketSummary.date, '2025-01-12'))
+      .orderBy(commodities.id);
+
+    // Calculate price change from the last two days
+    const commoditiesWithPriceChange = await Promise.all(
+      result.map(async (commodity) => {
+        if (commodity.name) {
+          const priceHistory = await this.getPriceHistory(commodity.name);
+          let priceChange = 0;
+          if (priceHistory.length >= 2) {
+            const current = parseFloat(priceHistory[0].closingPrice || '0');
+            const previous = parseFloat(priceHistory[1].closingPrice || '0');
+            priceChange = previous > 0 ? ((current - previous) / previous) * 100 : 0;
+          }
+          
+          return {
+            ...commodity,
+            sentimentScore: parseFloat(commodity.sentimentScore || '0'),
+            price: parseFloat(commodity.price || '0'),
+            priceChange: parseFloat(priceChange.toFixed(2)),
+            keywords: Array.isArray((commodity.keywords as any)?.top_keywords) 
+              ? (commodity.keywords as any).top_keywords 
+              : ['시장분석', '동향']
+          };
+        }
+        return commodity;
+      })
+    );
+
+    return commoditiesWithPriceChange as Commodity[];
   }
 
   async getCommodity(id: number): Promise<Commodity | undefined> {
@@ -447,7 +496,50 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNewsByCommodity(commodityId: number): Promise<News[]> {
-    return await db.select().from(news).where(eq(news.commodityId, commodityId));
+    // Get commodity name first
+    const commodity = await this.getCommodity(commodityId);
+    if (!commodity) return [];
+
+    // Get news data from raw_news and news_analysis_results tables
+    const result = await db
+      .select({
+        id: rawNews.id,
+        title: rawNews.title,
+        content: rawNews.content,
+        sentimentScore: newsAnalysisResults.sentimentScore,
+        keywords: newsAnalysisResults.keywords,
+        publishedAt: rawNews.publishedTime,
+      })
+      .from(rawNews)
+      .leftJoin(newsAnalysisResults, eq(rawNews.id, newsAnalysisResults.rawNewsId))
+      .where(eq(rawNews.commodity, commodity.name))
+      .orderBy(desc(rawNews.publishedTime))
+      .limit(10);
+
+    return result.map(item => ({
+      id: item.id,
+      commodityId: commodityId,
+      title: item.title || '',
+      content: item.content || '',
+      snippet: (item.content || '').substring(0, 100) + '...',
+      sentimentScore: parseFloat(item.sentimentScore?.toString() || '0'),
+      keywords: this.extractKeywords(item.keywords),
+      publishedAt: item.publishedAt || new Date(),
+    })) as News[];
+  }
+
+  private extractKeywords(keywords: any): string[] {
+    if (!keywords) return ['분석중'];
+    if (typeof keywords === 'object') {
+      const allKeywords = [
+        ...(keywords.positive || []),
+        ...(keywords.negative || []),
+        ...(keywords.neutral || []),
+        ...(keywords.top_keywords || [])
+      ];
+      return allKeywords.length > 0 ? allKeywords : ['분석중'];
+    }
+    return ['분석중'];
   }
 
   async getNews(id: number): Promise<News | undefined> {
@@ -456,7 +548,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getLatestNews(): Promise<News[]> {
-    return await db.select().from(news).orderBy(desc(news.publishedAt)).limit(10);
+    // Get news data from raw_news and news_analysis_results tables
+    const result = await db
+      .select({
+        id: rawNews.id,
+        commodityId: commodities.id,
+        title: rawNews.title,
+        content: rawNews.content,
+        snippet: rawNews.content, // Use content as snippet for now
+        sentimentScore: newsAnalysisResults.sentimentScore,
+        keywords: newsAnalysisResults.keywords,
+        publishedAt: rawNews.publishedTime,
+      })
+      .from(rawNews)
+      .leftJoin(newsAnalysisResults, eq(rawNews.id, newsAnalysisResults.rawNewsId))
+      .leftJoin(commodities, eq(rawNews.commodity, commodities.name))
+      .where(eq(rawNews.relevantNews, true))
+      .orderBy(desc(rawNews.publishedTime))
+      .limit(10);
+
+    return result.map(item => ({
+      ...item,
+      sentimentScore: parseFloat(item.sentimentScore?.toString() || '0'),
+      keywords: this.extractKeywords(item.keywords),
+      snippet: item.content?.substring(0, 100) + '...' || '내용을 불러오는 중...'
+    })) as News[];
   }
 
   async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {

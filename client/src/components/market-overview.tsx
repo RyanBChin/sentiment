@@ -5,6 +5,9 @@ import { SaasPageHeader, SaasGrid } from "@/components/ui/saas-layout";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, AlertTriangle, TrendingDown, AlertCircle } from "lucide-react";
+import TrendSnapshot from "@/components/trend-snapshot";
+import TopGainersLosers from "@/components/top-gainers-losers";
+import LatestNewsFeed from "@/components/latest-news-feed";
 import type { Commodity } from "@shared/schema";
 
 interface MarketOverviewProps {
@@ -158,6 +161,18 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
           </SaasCard>
         ))}
       </SaasGrid>
+
+      {/* Trend Snapshot Section */}
+      <TrendSnapshot />
+
+      {/* Top Gainers & Losers Section */}
+      <TopGainersLosers />
+
+      {/* Latest News Feed Section */}
+      <LatestNewsFeed onNewsSelect={(newsId) => {
+        // Handle news selection - could navigate to news detail
+        console.log('Selected news:', newsId);
+      }} />
     </div>
   );
 }

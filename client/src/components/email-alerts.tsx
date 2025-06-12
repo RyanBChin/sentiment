@@ -162,7 +162,7 @@ export default function EmailAlerts() {
 
               {/* Email Address */}
               <div>
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 mb-1 block">
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground mb-1 block">
                   이메일 주소
                 </Label>
                 <Input

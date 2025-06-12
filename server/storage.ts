@@ -534,16 +534,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPriceHistory(commodity: string, startDate?: string, endDate?: string): Promise<PriceHistory[]> {
-    let query = db.select().from(priceHistory).where(eq(priceHistory.commodity, commodity));
-    
-    if (startDate && endDate) {
-      query = query.where(and(
-        eq(priceHistory.commodity, commodity),
-        // Add date range filtering if needed
-      ));
-    }
-    
-    return await query.orderBy(desc(priceHistory.date));
+    return await db.select().from(priceHistory)
+      .where(eq(priceHistory.commodity, commodity))
+      .orderBy(desc(priceHistory.date));
   }
 }
 

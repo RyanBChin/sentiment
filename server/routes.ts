@@ -154,6 +154,150 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Raw news routes
+  app.post('/api/raw-news', async (req, res) => {
+    try {
+      const validatedData = insertRawNewsSchema.parse(req.body);
+      const rawNews = await storage.createRawNews(validatedData);
+      res.json(rawNews);
+    } catch (error) {
+      console.error(`Error creating raw news:`, error);
+      res.status(400).json({ error: 'Invalid raw news data' });
+    }
+  });
+
+  app.get('/api/raw-news', async (req, res) => {
+    try {
+      const { status } = req.query;
+      if (status !== undefined) {
+        const analysisStatus = status === 'true';
+        const rawNews = await storage.getRawNewsByStatus(analysisStatus);
+        res.json(rawNews);
+      } else {
+        res.status(400).json({ error: 'Status parameter required' });
+      }
+    } catch (error) {
+      console.error(`Error fetching raw news:`, error);
+      res.status(500).json({ error: 'Failed to fetch raw news' });
+    }
+  });
+
+  app.get('/api/raw-news/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const rawNews = await storage.getRawNews(id);
+      if (rawNews) {
+        res.json(rawNews);
+      } else {
+        res.status(404).json({ error: 'Raw news not found' });
+      }
+    } catch (error) {
+      console.error(`Error fetching raw news:`, error);
+      res.status(500).json({ error: 'Failed to fetch raw news' });
+    }
+  });
+
+  app.patch('/api/raw-news/:id/status', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { analysisStatus } = req.body;
+      await storage.updateRawNewsStatus(id, analysisStatus);
+      res.json({ success: true });
+    } catch (error) {
+      console.error(`Error updating raw news status:`, error);
+      res.status(500).json({ error: 'Failed to update raw news status' });
+    }
+  });
+
+  // News analysis results routes
+  app.post('/api/news-analysis', async (req, res) => {
+    try {
+      const validatedData = insertNewsAnalysisResultsSchema.parse(req.body);
+      const analysis = await storage.createNewsAnalysisResult(validatedData);
+      res.json(analysis);
+    } catch (error) {
+      console.error(`Error creating news analysis:`, error);
+      res.status(400).json({ error: 'Invalid news analysis data' });
+    }
+  });
+
+  app.get('/api/news-analysis/:rawNewsId', async (req, res) => {
+    try {
+      const rawNewsId = parseInt(req.params.rawNewsId);
+      const analyses = await storage.getNewsAnalysisResults(rawNewsId);
+      res.json(analyses);
+    } catch (error) {
+      console.error(`Error fetching news analysis:`, error);
+      res.status(500).json({ error: 'Failed to fetch news analysis' });
+    }
+  });
+
+  // Daily market summary routes
+  app.post('/api/daily-summary', async (req, res) => {
+    try {
+      const validatedData = insertDailyMarketSummarySchema.parse(req.body);
+      const summary = await storage.createDailyMarketSummary(validatedData);
+      res.json(summary);
+    } catch (error) {
+      console.error(`Error creating daily summary:`, error);
+      res.status(400).json({ error: 'Invalid daily summary data' });
+    }
+  });
+
+  app.get('/api/daily-summary', async (req, res) => {
+    try {
+      const { commodity } = req.query;
+      const summaries = await storage.getDailyMarketSummaries(commodity as string);
+      res.json(summaries);
+    } catch (error) {
+      console.error(`Error fetching daily summaries:`, error);
+      res.status(500).json({ error: 'Failed to fetch daily summaries' });
+    }
+  });
+
+  app.get('/api/daily-summary/:date/:commodity', async (req, res) => {
+    try {
+      const { date, commodity } = req.params;
+      const summary = await storage.getDailyMarketSummary(date, commodity);
+      if (summary) {
+        res.json(summary);
+      } else {
+        res.status(404).json({ error: 'Daily summary not found' });
+      }
+    } catch (error) {
+      console.error(`Error fetching daily summary:`, error);
+      res.status(500).json({ error: 'Failed to fetch daily summary' });
+    }
+  });
+
+  // Price history routes
+  app.post('/api/price-history', async (req, res) => {
+    try {
+      const validatedData = insertPriceHistorySchema.parse(req.body);
+      const priceData = await storage.createPriceHistory(validatedData);
+      res.json(priceData);
+    } catch (error) {
+      console.error(`Error creating price history:`, error);
+      res.status(400).json({ error: 'Invalid price history data' });
+    }
+  });
+
+  app.get('/api/price-history/:commodity', async (req, res) => {
+    try {
+      const { commodity } = req.params;
+      const { startDate, endDate } = req.query;
+      const priceHistory = await storage.getPriceHistory(
+        commodity, 
+        startDate as string, 
+        endDate as string
+      );
+      res.json(priceHistory);
+    } catch (error) {
+      console.error(`Error fetching price history:`, error);
+      res.status(500).json({ error: 'Failed to fetch price history' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -1,0 +1,110 @@
+Build a simple responsive web application using **HTML**, **Tailwind CSS**, and **JavaScript** (vanilla). The app is a market news sentiment dashboard with three main sections: **시황 (Market Overview)**, **챗봇 (Chatbot)**, and **알림 설정 (Email Alerts)**.
+
+Use Tailwind for styling and JavaScript to toggle between the sections (do not reload the page). All content can use placeholder data for now.
+
+---
+
+🔹 Layout
+
+1. A **top navigation bar** with three clickable tabs: 
+   - “시황”
+   - “챗봇”
+   - “알림 설정”
+2. Clicking a tab should **toggle visibility** of each corresponding section (`display: none` / `block` via JS).
+3. Default visible tab = “시황”
+
+---
+
+🔹 Section 1: “시황” (Market Overview)
+
+Split into two vertical parts:
+
+**Top Half – Summary Overview**
+- A container with:
+  - `📊 평균 점수 (Average Score)`: [e.g., 72.3]
+  - `🏆 최고 점수 품목 (Top Scoring Commodity)`: [e.g., Corn – 89.5]
+- Display in large text with color-coded backgrounds.
+
+**Bottom Half – 실시간 시황 점수 (Live Sentiment Cards)**
+- Display **5 horizontal cards**, one for each commodity: Corn, Wheat, Copper, WTI, Gold
+- Each card shows:
+  - Name of the commodity
+  - `Sentiment Score` (e.g., 80.2)
+  - `Closing Price` (e.g., $632.5)
+  - `Price Change` (e.g., ▲2.1%)
+  - `Top Keywords` (e.g., “dry weather, exports”)
+- Clicking a card **opens a detail view** (you can use another hidden section for the detail view).
+
+---
+
+🔹 Section 1-2: 상세 페이지 (Commodity Detail Page)
+
+Split layout: **Left** for textual insights, **Right** for charts
+
+**Left Box:**
+- Highlighted `Latest Sentiment Score` in large text
+- `Key Summary` box:
+  - “📌 주요 현황 이유 (Reasoning)” – short paragraph
+  - “🔑 주요 키워드 (Keywords)” – tag-style list
+- A small table below:
+  - Columns: `News Title | Content Snippet | Sentiment Score`
+  - Limit content to 1-2 lines per row
+  - Clicking a row opens full news page (section 1-3)
+
+**Right Box:**
+- Two placeholder line charts:
+  - `가격 흐름 (Closing Price Trend)`
+  - `점수 흐름 (Sentiment Score Trend)`
+- Show trend from "latest day" to "2 weeks before"
+
+---
+
+🔹 Section 1-3: 뉴스 상세 페이지 (News Detail Page)
+
+Show full news information:
+
+- `📰 뉴스 제목 (Title)`
+- `📈 뉴스 점수 (Sentiment Score)`
+- `🔑 주요 키워드 (Keywords)`
+- `📝 뉴스 본문 전체 (Full Content)`
+
+---
+
+🔹 Section 2: “챗봇” (Chatbot Q&A)
+
+- A text input box for natural language questions (e.g., “Why did wheat prices fall this week?”)
+- A submit button
+- A loading spinner (use Tailwind spinner)
+- A response area box showing the AI answer (placeholder)
+
+**After submit**, simulate POST to `/rag-chatbot` and print dummy reply.
+
+---
+
+🔹 Section 3: “알림 설정” (Email Alert Settings)
+
+- Dropdown or checkboxes: Select interested commodities
+- Radio buttons: Alert frequency (Hourly / Daily / Weekly)
+- Input field: Email address
+- Submit button
+- At the bottom, display a sample alert format:
+[📬 Sample Alert]
+품목: 옥수수
+점수: 78.5
+키워드: drought, supply cut
+요약: “Corn prices surged due to …”
+yaml
+CopyEdit
+
+---
+
+✅ Style notes:
+- Use Tailwind for all layout and spacing
+- Cards: rounded, shadowed, hover effects
+- Sections: `container mx-auto`, `grid`, `flex` as needed
+- Keep color scheme consistent and clean
+- Use `hidden` + `block` or `flex` to toggle sections via JavaScript
+
+---
+
+Do not use any external frameworks like React or Vue. Keep it all in plain HTML/CSS/JS for now.

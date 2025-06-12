@@ -1,10 +1,10 @@
-import { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Send, Bot, User, Mic, Volume2, TrendingUp, TrendingDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Loader2, Send, Bot, User, Mic, Volume2, TrendingUp, TrendingDown, ArrowUp, ArrowDown, GripHorizontal } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import type { Commodity } from "@shared/schema";
 
@@ -25,6 +25,11 @@ export default function Chatbot() {
     }
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [chatHeight, setChatHeight] = useState(400);
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeRef = useRef<HTMLDivElement>(null);
+  const startY = useRef(0);
+  const startHeight = useRef(0);
   
   // Fetch market data for today's summary
   const { data: commodities } = useQuery<Commodity[]>({
@@ -34,6 +39,39 @@ export default function Chatbot() {
   const { data: sentimentAlert } = useQuery<any>({
     queryKey: ["/api/sentiment-alert"]
   });
+
+  // Resize functionality
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    setIsResizing(true);
+    startY.current = e.clientY;
+    startHeight.current = chatHeight;
+    e.preventDefault();
+  }, [chatHeight]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizing) return;
+    
+    const deltaY = startY.current - e.clientY;
+    const newHeight = Math.max(200, Math.min(800, startHeight.current + deltaY));
+    setChatHeight(newHeight);
+  }, [isResizing]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsResizing(false);
+  }, []);
+
+  // Add/remove event listeners
+  React.useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   const chatMutation = useMutation({
     mutationFn: async (question: string) => {
@@ -99,150 +137,165 @@ export default function Chatbot() {
   ];
 
   return (
-    <div className="h-screen overflow-hidden p-6">
-      {/* Two Column Layout */}
-      <div className="grid grid-cols-3 gap-6 h-full">
+    <div className="h-screen overflow-hidden">
+      {/* Three sections: Top info cards, Bottom resizable chat, Right sidebar */}
+      <div className="flex h-full">
         
-        {/* Left Column - Main Chat Area (2/3 width) */}
-        <div className="col-span-2 flex flex-col">
-          {/* Chat Interface */}
-          <Card className="flex-1 flex flex-col">
-            <CardHeader className="pb-3 flex-shrink-0">
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Bot className="w-5 h-5 mr-2" />
-                  AI 시장 분석 챗봇
-                </div>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" onClick={handleSpeechInput}>
-                    <Mic className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardTitle>
-            </CardHeader>
+        {/* Left Main Area (2/3 width) */}
+        <div className="flex-1 flex flex-col p-6">
+          
+          {/* Top section - flexible height */}
+          <div className="flex-1 min-h-0 mb-4">
+            <div className="h-full overflow-y-auto">
+              {/* Market summary cards can go here if needed */}
+              <div className="text-center text-gray-500 py-8">
+                <Bot className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-lg font-medium">AI 시장 분석 챗봇</p>
+                <p className="text-sm">아래 채팅창에서 시장 동향에 대해 질문해보세요</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Resizable Chat Area - Fixed at bottom */}
+          <div className="flex-shrink-0">
+            {/* Resize Handle */}
+            <div 
+              className="flex items-center justify-center py-2 cursor-ns-resize bg-gray-100 hover:bg-gray-200 rounded-t-lg transition-colors"
+              onMouseDown={handleMouseDown}
+              style={{ userSelect: 'none' }}
+            >
+              <GripHorizontal className="w-5 h-5 text-gray-500" />
+              <span className="ml-2 text-xs text-gray-600">드래그하여 크기 조절</span>
+            </div>
             
-            <CardContent className="flex-1 flex flex-col p-6">
-              {/* Chat Messages - Takes up most space */}
-              <div className="flex-1 mb-4 overflow-y-auto p-4 bg-gray-50 rounded-lg space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-md px-4 py-3 rounded-lg ${
-                        message.type === 'user'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white text-gray-900 shadow-sm border'
-                      }`}
-                    >
-                      <div className="flex items-start space-x-2">
-                        {message.type === 'bot' && <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-blue-600" />}
-                        {message.type === 'user' && <User className="w-4 h-4 mt-1 flex-shrink-0" />}
-                        <div className="flex-1">
-                          <div 
-                            className="text-sm leading-relaxed"
-                            dangerouslySetInnerHTML={{ 
-                              __html: message.type === 'bot' ? formatMessageContent(message.content) : message.content 
-                            }}
-                          />
-                          <div className="flex items-center justify-between mt-2">
-                            <p className="text-xs opacity-70">
-                              {message.timestamp.toLocaleTimeString('ko-KR', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </p>
-                            {message.type === 'bot' && (
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-6 w-6 p-0 opacity-60 hover:opacity-100"
-                                onClick={() => handleSpeechOutput(message.content)}
-                              >
-                                <Volume2 className="w-3 h-3" />
-                              </Button>
-                            )}
+            {/* Chat Container */}
+            <Card className="border-t-0 rounded-t-none">
+              <CardContent className="p-4" style={{ height: `${chatHeight}px` }}>
+                <div className="flex flex-col h-full">
+                  
+                  {/* Chat Messages - Scrollable area */}
+                  <div className="flex-1 overflow-y-auto mb-4 p-3 bg-gray-50 rounded-lg space-y-3">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-sm px-4 py-3 rounded-lg ${
+                            message.type === 'user'
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-white text-gray-900 shadow-sm border'
+                          }`}
+                        >
+                          <div className="flex items-start space-x-2">
+                            {message.type === 'bot' && <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-blue-600" />}
+                            {message.type === 'user' && <User className="w-4 h-4 mt-1 flex-shrink-0" />}
+                            <div className="flex-1">
+                              <div 
+                                className="text-sm leading-relaxed"
+                                dangerouslySetInnerHTML={{ 
+                                  __html: message.type === 'bot' ? formatMessageContent(message.content) : message.content 
+                                }}
+                              />
+                              <div className="flex items-center justify-between mt-2">
+                                <p className="text-xs opacity-70">
+                                  {message.timestamp.toLocaleTimeString('ko-KR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                                {message.type === 'bot' && (
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0 opacity-60 hover:opacity-100"
+                                    onClick={() => handleSpeechOutput(message.content)}
+                                  >
+                                    <Volume2 className="w-3 h-3" />
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
+                    {chatMutation.isPending && (
+                      <div className="flex justify-start">
+                        <div className="bg-white text-gray-900 px-4 py-3 rounded-lg shadow-sm border">
+                          <div className="flex items-center space-x-2">
+                            <Bot className="w-4 h-4 text-blue-600" />
+                            <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                            <span className="text-sm">분석 중...</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                ))}
-                {chatMutation.isPending && (
-                  <div className="flex justify-start">
-                    <div className="bg-white text-gray-900 px-4 py-3 rounded-lg shadow-sm border">
-                      <div className="flex items-center space-x-2">
-                        <Bot className="w-4 h-4 text-blue-600" />
-                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                        <span className="text-sm">분석 중...</span>
+
+                  {/* Suggested Questions - Horizontal scroll */}
+                  <div className="mb-4 flex-shrink-0">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">💡 추천 질문</h4>
+                    <div className="overflow-x-auto">
+                      <div className="flex gap-2 pb-2" style={{ minWidth: 'max-content' }}>
+                        {suggestedQuestions.map((question, index) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors whitespace-nowrap"
+                            onClick={() => {
+                              setInputValue(question);
+                              handleSubmit(question);
+                            }}
+                            disabled={chatMutation.isPending}
+                          >
+                            {question}
+                          </Button>
+                        ))}
                       </div>
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* Suggested Questions - Fixed at bottom */}
-              <div className="mb-4 flex-shrink-0">
-                <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
-                  💡 오늘의 추천 질문
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {suggestedQuestions.map((question, index) => (
-                    <Button
-                      key={index}
+                  {/* Input Area - Fixed at bottom */}
+                  <div className="flex space-x-2 flex-shrink-0">
+                    <Input
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      placeholder="시장 동향이나 상품 분석에 대해 질문해보세요..."
+                      onKeyPress={(e) => e.key === 'Enter' && !chatMutation.isPending && inputValue.trim() && handleSubmit(inputValue)}
+                      disabled={chatMutation.isPending}
+                      className="flex-1"
+                    />
+                    <Button 
                       variant="outline"
                       size="sm"
-                      className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors"
-                      onClick={() => {
-                        setInputValue(question);
-                        handleSubmit(question);
-                      }}
+                      onClick={handleSpeechInput}
                       disabled={chatMutation.isPending}
+                      className="px-3"
                     >
-                      {question}
+                      <Mic className="w-4 h-4" />
                     </Button>
-                  ))}
+                    <Button 
+                      onClick={() => handleSubmit(inputValue)} 
+                      disabled={chatMutation.isPending || !inputValue.trim()}
+                      className="px-4"
+                    >
+                      {chatMutation.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-
-              {/* Input Area - Fixed at bottom */}
-              <div className="flex space-x-2 flex-shrink-0">
-                <Input
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="시장 동향이나 상품 분석에 대해 질문해보세요..."
-                  onKeyPress={(e) => e.key === 'Enter' && !chatMutation.isPending && inputValue.trim() && handleSubmit(inputValue)}
-                  disabled={chatMutation.isPending}
-                  className="flex-1"
-                />
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSpeechInput}
-                  disabled={chatMutation.isPending}
-                  className="px-3"
-                >
-                  <Mic className="w-4 h-4" />
-                </Button>
-                <Button 
-                  onClick={() => handleSubmit(inputValue)} 
-                  disabled={chatMutation.isPending || !inputValue.trim()}
-                  className="px-4"
-                >
-                  {chatMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Right Column - Sidebar Information (1/3 width) */}
-        <div className="space-y-4 overflow-y-auto">
+        <div className="w-80 p-6 space-y-4 overflow-y-auto max-h-screen">
           
           {/* Today's Market Summary */}
           <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
@@ -295,6 +348,74 @@ export default function Chatbot() {
             </CardContent>
           </Card>
 
+          {/* Related News */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold flex items-center">
+                📰 관련 뉴스
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1">
+              <div className="space-y-3 max-h-60 overflow-y-auto">
+                {[
+                  {
+                    id: 1,
+                    title: "글로벌 밀 공급 부족 우려 심화",
+                    summary: "우크라이나 전쟁 장기화로 밀 수출 차질",
+                    sentiment: "부정적",
+                    time: "2시간 전"
+                  },
+                  {
+                    id: 2,
+                    title: "구리 가격 급등, 전기차 수요 급증",
+                    summary: "중국 전기차 생산량 증가로 구리 수요 폭증",
+                    sentiment: "긍정적",
+                    time: "4시간 전"
+                  },
+                  {
+                    id: 3,
+                    title: "금값 상승세, 인플레이션 우려 확산",
+                    summary: "연준 금리 정책 불확실성으로 안전자산 선호",
+                    sentiment: "중립적",
+                    time: "6시간 전"
+                  },
+                  {
+                    id: 4,
+                    title: "WTI 원유 70달러 돌파 전망",
+                    summary: "OPEC+ 감산 정책으로 공급 제한 지속",
+                    sentiment: "긍정적",
+                    time: "8시간 전"
+                  }
+                ].map((news) => (
+                  <div 
+                    key={news.id} 
+                    className="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                    onClick={() => {
+                      // Navigate to news detail - this would connect to news detail functionality
+                      console.log('Navigate to news:', news.id);
+                    }}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <h5 className="text-sm font-medium text-gray-900 line-clamp-2">{news.title}</h5>
+                      <Badge 
+                        variant="secondary" 
+                        className={`text-xs ml-2 ${
+                          news.sentiment === '긍정적' ? 'bg-green-100 text-green-800' :
+                          news.sentiment === '부정적' ? 'bg-red-100 text-red-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {news.sentiment}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-2">{news.summary}</p>
+                    <p className="text-xs text-gray-500">{news.time}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Recent Conversations */}
           <Card>
             <CardHeader className="pb-3">
@@ -303,7 +424,7 @@ export default function Chatbot() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-1">
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-48 overflow-y-auto">
                 {recentConversations.map((conv, index) => (
                   <div key={index} className="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors">
                     <div className="text-sm font-medium text-gray-900 mb-1">Q: {conv.question}</div>

@@ -66,47 +66,52 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
       {/* Sentiment Alert Box */}
       {sentimentAlert && (
         <div className="mb-4">
-          <div className={`trading-card ${sentimentAlert.scoreChange >= 0 ? 'border-sentiment-positive' : 'border-sentiment-negative'} p-4`}>
-            <div className="pb-2">
-              <h3 className="text-base font-semibold flex items-center text-foreground">
+          <Card className={`${sentimentAlert.scoreChange >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'}`}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold flex items-center">
                 {sentimentAlert.scoreChange >= 0 ? (
-                  <TrendingUp className="w-4 h-4 mr-2 text-sentiment-positive" />
+                  <TrendingUp className="w-4 h-4 mr-2 text-blue-600" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 mr-2 text-sentiment-negative" />
+                  <TrendingDown className="w-4 h-4 mr-2 text-red-600" />
                 )}
-                센티먼트 급변 품목 알림
-              </h3>
-            </div>
-            <div className="pt-1">
+                📌 센티먼트 급변 품목 알림
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-1">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h4 className="text-lg font-bold text-foreground">
-                    {sentimentAlert.commodity} ({sentimentAlert.englishName})
-                  </h4>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    📉 {sentimentAlert.commodity} ({sentimentAlert.englishName})
+                  </h3>
                   <div className="flex items-center space-x-2 mt-1">
-                    <span className={`text-sm font-semibold ${sentimentAlert.scoreChange >= 0 ? 'text-sentiment-positive' : 'text-sentiment-negative'}`}>
-                      센티먼트 변동: {sentimentAlert.scoreChange >= 0 ? '+' : ''}{sentimentAlert.scoreChange} pts
+                    <span className={`text-sm font-semibold ${sentimentAlert.scoreChange >= 0 ? 'text-blue-700' : 'text-red-700'}`}>
+                      📊 센티먼트 변동: {sentimentAlert.scoreChange >= 0 ? '+' : ''}{sentimentAlert.scoreChange} pts
+                    </span>
+                    <span className="text-xs text-gray-600">
+                      ({sentimentAlert.from} → {sentimentAlert.to})
                     </span>
                   </div>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-sm font-semibold ${sentimentAlert.scoreChange >= 0 ? 'bg-sentiment-positive/20 text-sentiment-positive' : 'bg-sentiment-negative/20 text-sentiment-negative'}`}>
-                  긴급
-                </div>
+                <Badge 
+                  className={`${sentimentAlert.scoreChange >= 0 ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} px-3 py-1`}
+                >
+                  3일간
+                </Badge>
               </div>
               
-              <div className="border-t border-border pt-3">
-                <h5 className="text-sm font-medium text-foreground mb-1">
-                  최신 뉴스
-                </h5>
-                <p className="text-sm font-medium text-foreground mb-1">
-                  최신 시장 동향 분석
+              <div className="border-t pt-3">
+                <h4 className="text-sm font-medium text-gray-900 mb-1">
+                  📰 최신 뉴스
+                </h4>
+                <p className="text-sm font-medium text-gray-800 mb-1">
+                  {sentimentAlert.headline}
                 </p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  센티먼트 급변에 따른 시장 영향 분석이 진행 중입니다.
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  {sentimentAlert.summary}
                 </p>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, AlertTriangle, TrendingDown } from "lucide-react";
+import { TrendingUp, AlertTriangle, TrendingDown, Volume2 } from "lucide-react";
 import type { Commodity } from "@shared/schema";
 
 interface MarketOverviewProps {
@@ -41,6 +41,17 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
     );
   }
 
+  const getCommodityIcon = (name: string) => {
+    const icons: { [key: string]: string } = {
+      '옥수수': '🌽',
+      '밀': '🌾', 
+      '구리': '🔶',
+      'WTI유': '🛢️',
+      '금': '🟨'
+    };
+    return icons[name] || '📦';
+  };
+
   const getSentimentColor = (score: number) => {
     if (score >= 70) return "text-sentiment-positive";
     if (score >= 50) return "text-sentiment-neutral";
@@ -49,7 +60,7 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
 
   const getSentimentBgColor = (score: number) => {
     if (score >= 70) return "bg-sentiment-positive";
-    if (score >= 50) return "bg-sentiment-neutral";
+    if (score >= 50) return "bg-sentiment-neutral";  
     return "bg-sentiment-negative";
   };
 
@@ -62,105 +73,110 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Sentiment Alert Box */}
       {sentimentAlert && (
-        <div className="mb-4">
-          <Card className={`${sentimentAlert.scoreChange >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'}`}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center">
-                {sentimentAlert.scoreChange >= 0 ? (
-                  <TrendingUp className="w-4 h-4 mr-2 text-blue-600" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 mr-2 text-red-600" />
-                )}
-                📌 센티먼트 급변 품목 알림
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-1">
-              <div className="flex items-start justify-between mb-3">
+        <Card className="bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600 overflow-hidden">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-red-500/20 rounded-lg">
+                  <Volume2 className="w-5 h-5 text-red-400" />
+                </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    📉 {sentimentAlert.commodity} ({sentimentAlert.englishName})
+                  <h3 className="text-lg font-bold text-white mb-1">
+                    Sentiment Alert
                   </h3>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className={`text-sm font-semibold ${sentimentAlert.scoreChange >= 0 ? 'text-blue-700' : 'text-red-700'}`}>
-                      📊 센티먼트 변동: {sentimentAlert.scoreChange >= 0 ? '+' : ''}{sentimentAlert.scoreChange} pts
+                </div>
+              </div>
+              <Badge className="bg-slate-600 text-slate-200 px-3 py-1 text-sm">
+                3d
+              </Badge>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="text-4xl">
+                  {getCommodityIcon(sentimentAlert.commodity)}
+                </div>
+                <div>
+                  <h4 className="text-2xl font-bold text-white mb-1">
+                    {sentimentAlert.englishName}
+                  </h4>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg text-red-400">
+                      Sentiment <span className="text-red-300 font-semibold">Decreased</span>
                     </span>
-                    <span className="text-xs text-gray-600">
-                      ({sentimentAlert.from} → {sentimentAlert.to})
+                    <span className="text-red-300 text-sm">
+                      {Math.abs(sentimentAlert.scoreChange)} pts
                     </span>
+                    <TrendingDown className="w-4 h-4 text-red-400" />
                   </div>
                 </div>
-                <Badge 
-                  className={`${sentimentAlert.scoreChange >= 0 ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} px-3 py-1`}
-                >
-                  3일간
-                </Badge>
               </div>
-              
-              <div className="border-t pt-3">
-                <h4 className="text-sm font-medium text-gray-900 mb-1">
-                  📰 최신 뉴스
-                </h4>
-                <p className="text-sm font-medium text-gray-800 mb-1">
-                  {sentimentAlert.headline}
-                </p>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  {sentimentAlert.summary}
-                </p>
+              <div className="text-right">
+                <div className="text-4xl mb-2">
+                  {getCommodityIcon(sentimentAlert.commodity)}
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Live Sentiment Cards */}
+      {/* Latest News */}
+      <div className="flex items-center space-x-3 mb-4">
+        <div className="p-2 bg-slate-700 rounded-lg">
+          <div className="w-5 h-5 bg-slate-400 rounded-sm flex items-center justify-center">
+            <div className="w-3 h-2 bg-slate-200 rounded-sm"></div>
+          </div>
+        </div>
+        <h3 className="text-lg font-medium text-muted-foreground">Latest News</h3>
+      </div>
+
+      {/* Commodity Sentiment Scores */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-3">🗂️ 품목별 시황 점수</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-3">
+        <h2 className="text-xl font-bold text-foreground mb-6">Commodity Sentiment Scores</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {commodities.map((commodity) => (
             <Card
               key={commodity.id}
-              className="cursor-pointer hover:shadow-md transition-shadow duration-200"
+              className="bg-card border-border cursor-pointer hover:bg-secondary/50 transition-all duration-200 rounded-xl overflow-hidden"
               onClick={() => onCommoditySelect(commodity)}
             >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-semibold">
-                  {commodity.name}
-                </CardTitle>
-                <Badge
-                  className={`${getSentimentBgColor(commodity.sentimentScore)} text-white px-2 py-1 text-xs font-medium`}
-                >
-                  {commodity.sentimentScore}
-                </Badge>
-              </CardHeader>
-              <CardContent className="space-y-2 pt-1">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-600">종가</span>
-                  <span className="text-xs font-semibold text-gray-900">
-                    ${commodity.price.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-600">변동</span>
-                  <span className={`text-xs font-semibold ${getChangeColor(commodity.priceChange)}`}>
-                    {getChangeSymbol(commodity.priceChange)}{Math.abs(commodity.priceChange)}%
-                  </span>
-                </div>
-                <div className="pt-1 border-t border-gray-100">
-                  <p className="text-xs text-gray-600 mb-1">주요 키워드</p>
-                  <div className="flex flex-wrap gap-1">
-                    {commodity.keywords.slice(0, 2).map((keyword, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="bg-blue-50 text-blue-700 text-xs px-1 py-0"
-                      >
-                        {keyword}
-                      </Badge>
-                    ))}
+              <CardContent className="p-6">
+                {/* Commodity Icon and Name */}
+                <div className="flex flex-col items-center text-center mb-4">
+                  <div className="text-5xl mb-3">
+                    {getCommodityIcon(commodity.name)}
                   </div>
+                  <h3 className="text-lg font-bold text-foreground mb-1">
+                    {commodity.englishName}
+                  </h3>
+                  
+                  {/* Sentiment Score Circle */}
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-lg mb-3 ${getSentimentBgColor(commodity.sentimentScore)}`}>
+                    {commodity.sentimentScore}
+                  </div>
+                </div>
+                
+                {/* Price Info */}
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-2xl font-bold text-foreground">
+                      ${commodity.price.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <span className={`flex items-center font-semibold ${getChangeColor(commodity.priceChange)}`}>
+                      {getChangeSymbol(commodity.priceChange)} {Math.abs(commodity.priceChange)}%
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Keywords */}
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground mb-2">{commodity.keywords.slice(0, 2).join(' ')}</p>
                 </div>
               </CardContent>
             </Card>

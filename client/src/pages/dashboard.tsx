@@ -76,26 +76,30 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-background font-sans">
       {/* Header Navigation */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="container mx-auto px-4">
+      <header className="bg-card border-b border-border sticky top-0 z-50">
+        <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-bold text-gray-900">
-                <ChartBar className="inline w-5 h-5 text-blue-600 mr-2" />
+              <h1 className="text-xl font-bold text-foreground">
+                <ChartBar className="inline w-5 h-5 text-primary mr-2" />
                 Market Sentiment
               </h1>
             </div>
             
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-1">
+            <nav className="hidden md:flex space-x-2">
               {tabConfig.map(({ id, label, icon: Icon }) => (
                 <Button
                   key={id}
                   onClick={() => setActiveSection(id as ActiveSection)}
                   variant={activeSection === id ? "default" : "ghost"}
-                  className="px-4 py-2 font-medium transition-all duration-200"
+                  className={`px-6 py-2 font-medium transition-all duration-200 rounded-xl ${
+                    activeSection === id 
+                      ? "bg-primary text-primary-foreground" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  }`}
                 >
                   <Icon className="w-4 h-4 mr-2" />
                   {label}
@@ -107,7 +111,7 @@ export default function Dashboard() {
             <Button
               variant="ghost"
               size="sm"
-              className="md:hidden"
+              className="md:hidden text-muted-foreground hover:text-foreground"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <Menu className="w-5 h-5" />
@@ -126,7 +130,11 @@ export default function Dashboard() {
                       setMobileMenuOpen(false);
                     }}
                     variant={activeSection === id ? "default" : "ghost"}
-                    className="justify-start px-4 py-3 font-medium transition-all duration-200"
+                    className={`justify-start px-4 py-3 font-medium transition-all duration-200 rounded-xl ${
+                      activeSection === id 
+                        ? "bg-primary text-primary-foreground" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    }`}
                   >
                     <Icon className="w-4 h-4 mr-2" />
                     {label}
@@ -139,7 +147,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-2 max-w-7xl">
+      <main className="container mx-auto px-6 py-6 max-w-7xl">
         {renderActiveSection()}
       </main>
     </div>

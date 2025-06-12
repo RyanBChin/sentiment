@@ -109,20 +109,23 @@ export default function Chatbot() {
   ];
 
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="w-screen h-screen max-w-[1920px] max-h-[1080px] mx-auto overflow-hidden">
       {/* Two Column Layout - No Scroll */}
-      <div className="grid grid-cols-3 gap-6 h-full p-6">
+      <div className="grid grid-cols-3 gap-8 h-full p-8">
         
         {/* Left Column - Chat Area (2/3 width) */}
         <div className="col-span-2 flex flex-col">
           
           {/* Chat Header */}
-          <Card className="mb-4 flex-shrink-0">
-            <CardHeader className="pb-3">
+          <Card className="mb-6 flex-shrink-0 bg-white rounded-lg shadow p-6">
+            <CardHeader className="pb-0 p-0">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Bot className="w-5 h-5 mr-2" />
-                  AI 시장 분석 챗봇
+                  <Bot className="w-6 h-6 mr-3 text-blue-600" />
+                  <div>
+                    <h1 className="text-xl font-bold text-gray-900">AI 시장 분석 챗봇</h1>
+                    <p className="text-sm text-gray-600 font-normal">실시간 시장 데이터와 전문가 분석을 기반으로 답변드립니다</p>
+                  </div>
                 </div>
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" onClick={handleSpeechInput}>
@@ -134,11 +137,11 @@ export default function Chatbot() {
           </Card>
 
           {/* Chat Container - Fixed Height */}
-          <Card className="flex-1 flex flex-col min-h-0">
+          <Card className="flex-1 flex flex-col min-h-0 bg-white rounded-lg shadow">
             <CardContent className="p-6 flex flex-col h-full">
               
               {/* Chat Messages - Fixed Height with Scroll */}
-              <div className="flex-1 overflow-y-auto mb-4 p-4 bg-gray-50 rounded-lg space-y-4" style={{ height: '60vh' }}>
+              <div className="flex-1 overflow-y-auto mb-4 p-4 bg-gray-50 rounded-lg space-y-4 max-h-[700px]">
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -200,26 +203,28 @@ export default function Chatbot() {
               </div>
 
               {/* Suggested Questions - Limited to 2 lines */}
-              <div className="mb-4 flex-shrink-0">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">💡 추천 질문</h4>
-                <div className="flex flex-wrap gap-2 max-h-16 overflow-hidden">
-                  {suggestedQuestions.slice(0, 6).map((question, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors"
-                      onClick={() => {
-                        setInputValue(question);
-                        handleSubmit(question);
-                      }}
-                      disabled={chatMutation.isPending}
-                    >
-                      {question}
-                    </Button>
-                  ))}
+              {messages.length === 0 && (
+                <div className="mb-4 flex-shrink-0">
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">추천 질문</h4>
+                  <div className="flex flex-wrap gap-2 max-h-[80px] overflow-y-auto">
+                    {suggestedQuestions.map((question, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors flex-shrink-0"
+                        onClick={() => {
+                          setInputValue(question);
+                          handleSubmit(question);
+                        }}
+                        disabled={chatMutation.isPending}
+                      >
+                        {question}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Input Area - Fixed at bottom */}
               <div className="flex space-x-2 flex-shrink-0">
@@ -257,55 +262,70 @@ export default function Chatbot() {
         </div>
 
         {/* Right Column - Sidebar Information (1/3 width) */}
-        <div className="flex flex-col space-y-4">
+        <div className="col-span-1 flex flex-col space-y-6">
           
           {/* Today's Market Summary */}
-          <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200 flex-shrink-0">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-bold flex items-center">
-                📈 오늘의 시장 한눈에 보기
+          <Card className="bg-white rounded-lg shadow p-6">
+            <CardHeader className="pb-4 p-0">
+              <CardTitle className="text-lg font-semibold flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
+                오늘의 시장
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-1">
-              <div className="space-y-2">
-                <div>
-                  <h4 className="font-semibold text-xs text-gray-800 mb-2">주요 시장 동향</h4>
-                  {sentimentAlert && (
-                    <div className="flex items-center space-x-2 p-2 bg-white rounded-lg mb-2">
-                      {sentimentAlert.scoreChange >= 0 ? (
-                        <ArrowUp className="w-3 h-3 text-green-600" />
-                      ) : (
-                        <ArrowDown className="w-3 h-3 text-red-600" />
-                      )}
-                      <span className="text-xs">
-                        <strong>{sentimentAlert.commodity}</strong> 센티먼트 <strong>{Math.abs(sentimentAlert.scoreChange)}</strong>점 변동
-                      </span>
+            <CardContent className="p-0">
+              <div className="space-y-3">
+                {sentimentAlert && (
+                  <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                    {sentimentAlert.scoreChange >= 0 ? (
+                      <ArrowUp className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <ArrowDown className="w-4 h-4 text-red-600" />
+                    )}
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">
+                        {sentimentAlert.commodity}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        점수: {sentimentAlert.currentScore} ({sentimentAlert.scoreChange >= 0 ? '+' : ''}{sentimentAlert.scoreChange})
+                      </p>
                     </div>
-                  )}
-                  {commodities && commodities.length > 0 && (
-                    <div className="flex items-center space-x-2 p-2 bg-white rounded-lg">
-                      {commodities[0].priceChange >= 0 ? (
+                  </div>
+                )}
+                
+                {commodities && commodities.slice(0, 5).map((commodity, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">{commodity.name}</span>
+                    <div className="flex items-center space-x-1">
+                      <span className={`text-sm font-medium ${commodity.priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {commodity.priceChange >= 0 ? '+' : ''}{commodity.priceChange}%
+                      </span>
+                      {commodity.priceChange >= 0 ? (
                         <TrendingUp className="w-3 h-3 text-green-600" />
                       ) : (
                         <TrendingDown className="w-3 h-3 text-red-600" />
                       )}
-                      <span className="text-xs">
-                        <strong>{commodities[0].name}</strong> 가격 <strong>{Math.abs(commodities[0].priceChange)}%</strong> 
-                        {commodities[0].priceChange >= 0 ? ' 상승' : ' 하락'}
-                      </span>
                     </div>
-                  )}
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-gray-800 mb-2">🔑 핵심 키워드</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {['가뭄', '공급부족', '안전자산', '인플레이션', '전기차'].map((keyword, index) => (
-                      <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 text-xs px-2 py-1">
-                        {keyword}
-                      </Badge>
-                    ))}
                   </div>
-                </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Market Keywords */}
+          <Card className="bg-white rounded-lg shadow p-6">
+            <CardHeader className="pb-4 p-0">
+              <CardTitle className="text-lg font-semibold">핵심 키워드</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="flex flex-wrap gap-2">
+                {['가뭄', '공급부족', '안전자산', '인플레이션', '전기차', '지정학'].map((keyword, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium"
+                  >
+                    {keyword}
+                  </span>
+                ))}
               </div>
             </CardContent>
           </Card>

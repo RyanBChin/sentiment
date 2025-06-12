@@ -1,0 +1,81 @@
+Please redesign the commodity detail page layout to fit nicely in a 1920x1080 screen without scrolling. The layout should be a clean, two-column layout using Tailwind CSS.
+
+---
+
+🔹 [1] Page Structure: 2-column grid (Left and Right), full-screen width
+
+Use a responsive grid layout (e.g., `grid grid-cols-2 gap-6 p-6`).
+
+---
+
+🔹 [2] Left Column – 📊 Sentiment + Market Overview (Top), 📈 Chart (Bottom)
+
+**Top Left (combine two blocks):**
+- Merge "최신 센티먼트 점수" + "시장 지표" into a single box
+- Show:
+  - 센티먼트 점수 (숫자 + 긍정/부정 레이블)
+  - 현재 가격
+  - 일일 변동률
+  - (간단한 스타일 차이로 나누거나 두 개의 flex box로)
+
+**Bottom Left:**
+- "가격 & 센티먼트 추이 (2주)" 그래프
+- Move it here, styled in full-width within the left column
+
+---
+
+🔹 [3] Right Column – 🧠 핵심 요약 (Top), 📰 관련 뉴스 (Bottom)
+
+**Top Right:**
+- 핵심 요약 박스 (“주요 현황 이유” + “주요 키워드”)
+
+**Bottom Right:**
+- 관련 뉴스 리스트:
+  - 뉴스 제목 / 내용 요약 / 주요 키워드 / 점수
+  - 각 row 클릭 시 뉴스 상세 보기로 이동
+  - 스타일은 `hover:bg-gray-100`, `cursor-pointer`, `rounded`, etc.
+
+---
+
+🔹 [4] Styling Guide
+
+- Target layout for `1920x1080` screen (fit without scrolling)
+- Use:
+  - `h-screen`, `overflow-hidden`, `grid-cols-2`, `space-y-4`, `p-6`
+  - Tailwind `flex`, `gap`, `rounded-lg`, `shadow`, `bg-white`, etc.
+- Each content block should be neatly boxed with padding and title
+- Use proportional vertical spacing: 60% top block / 40% bottom in each column
+- All text should remain readable at this resolution
+
+---
+
+🔹 [5] Bonus (optional): Chart responsiveness
+
+- Ensure chart (Chart.js or other) resizes gracefully within `div` container
+- Set fixed height (e.g., `h-[300px]`) for chart box
+
+---
+
+✅ Example Layout Summary
+
+Left Column	Right Column
+센티먼트 + 시장지표	핵심 요약
+가격 + 점수 추이 그래프	관련 뉴스 테이블
+
+sql
+Copy
+Edit
+
+This layout should feel like a trading/investment dashboard view, fitting one screen without scroll on 1920x1080.
+📌 참고 예시 구조
+mathematica
+Copy
+Edit
+grid grid-cols-2 gap-6 p-6 h-screen
+
+┌──────────── Left Column ─────────────┐     ┌──────────── Right Column ────────────┐
+| ┌ Sentiment + Market Metrics ┐       |     | ┌ Key Summary ┐                      |
+| └────────────────────────────┘       |     | └──────────────┘                    |
+| ┌ Chart: 가격 & 점수 (2주) ┐        |     | ┌ Related News Table ┐              |
+| └────────────────────────────┘       |     | └────────────────────┘              |
+└──────────────────────────────────────┘     └──────────────────────────────────────┘

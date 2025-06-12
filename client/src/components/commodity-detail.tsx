@@ -47,188 +47,182 @@ export default function CommodityDetail({ commodity, onBack, onNewsSelect }: Com
   };
 
   return (
-    <div className="space-y-3">
+    <div className="h-screen overflow-hidden p-6">
       {/* Header */}
-      <div>
-        <Button
-          onClick={onBack}
-          variant="ghost"
-          className="mb-2 text-blue-600 hover:text-blue-700"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          시황으로 돌아가기
-        </Button>
-        <h2 className="text-xl font-bold text-gray-900 mb-1">
-          {commodity.name} 상세 정보
-        </h2>
-        <p className="text-sm text-gray-600">실시간 센티먼트 분석 및 시장 동향</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onBack}
+            className="flex items-center"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            뒤로
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {commodity.name} 상세 분석
+          </h1>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Left: Textual Insights */}
-        <div className="space-y-3">
-          {/* Latest Sentiment Score */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">최신 센티먼트 점수</CardTitle>
+      {/* Two-Column Layout */}
+      <div className="grid grid-cols-2 gap-6 h-[calc(100vh-120px)]">
+        
+        {/* Left Column */}
+        <div className="flex flex-col space-y-4">
+          
+          {/* Top Left - Combined Sentiment + Market Metrics */}
+          <Card className="flex-shrink-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold">📊 센티먼트 & 시장 지표</CardTitle>
             </CardHeader>
             <CardContent className="pt-1">
-              <div className={`text-3xl font-bold mb-1 ${getSentimentColor(commodity.sentimentScore)}`}>
-                {commodity.sentimentScore}
+              <div className="grid grid-cols-2 gap-6">
+                
+                {/* Sentiment Score */}
+                <div className="text-center">
+                  <div className="text-4xl font-bold mb-2" style={{ color: getSentimentColor(commodity.sentimentScore) }}>
+                    {commodity.sentimentScore}
+                  </div>
+                  <Badge
+                    className={`${getSentimentBgColor(commodity.sentimentScore)} text-white px-4 py-2 text-sm font-medium`}
+                  >
+                    {getSentimentText(commodity.sentimentScore)}
+                  </Badge>
+                </div>
+
+                {/* Market Metrics */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">현재 가격</span>
+                    <span className="text-lg font-bold text-gray-900">
+                      ${commodity.price}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">일일 변동률</span>
+                    <span className={`text-lg font-bold ${commodity.priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {commodity.priceChange >= 0 ? '▲' : '▼'} {Math.abs(commodity.priceChange).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">센티먼트 점수</span>
+                    <span className="text-sm font-semibold text-gray-900">
+                      {commodity.sentimentScore}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <p className="text-xs text-gray-600">{getSentimentText(commodity.sentimentScore)}</p>
             </CardContent>
           </Card>
 
-          {/* Key Summary */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">핵심 요약</CardTitle>
+          {/* Bottom Left - Chart */}
+          <Card className="flex-1">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold">📈 가격 & 센티먼트 추이 (2주)</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 pt-1">
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-1 flex items-center">
-                  📌 주요 현황 이유
-                </h4>
-                <p className="text-gray-700 text-xs leading-relaxed">
-                  {commodity.name}의 현재 센티먼트 점수는 {commodity.sentimentScore}로, 
-                  {commodity.sentimentScore >= 70 ? ' 매우 긍정적인' : 
-                   commodity.sentimentScore >= 50 ? ' 중립적인' : ' 부정적인'} 상황입니다.
-                </p>
+            <CardContent className="pt-1 h-[calc(100%-80px)]">
+              <div className="h-full">
+                <CommodityChart 
+                  commodityId={commodity.id} 
+                  commodityName={commodity.name}
+                />
               </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-1 flex items-center">
-                  🔑 주요 키워드
-                </h4>
-                <div className="flex flex-wrap gap-1">
-                  {commodity.keywords.map((keyword, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="bg-blue-50 text-blue-700 text-xs px-2 py-0"
-                    >
-                      {keyword}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* News Table */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">관련 뉴스</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-1">
-              {isLoading ? (
-                <div className="space-y-2">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton key={i} className="h-12" />
-                  ))}
-                </div>
-              ) : news && news.length > 0 ? (
-                <div className="max-h-64 overflow-y-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs">뉴스 제목</TableHead>
-                        <TableHead className="text-xs">내용 요약</TableHead>
-                        <TableHead className="text-xs">주요 키워드</TableHead>
-                        <TableHead className="text-center text-xs">점수</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {news.map((article) => (
-                        <TableRow
-                          key={article.id}
-                          className="cursor-pointer hover:bg-gray-100 transition-colors"
-                          onClick={() => onNewsSelect(article)}
-                        >
-                          <TableCell className="py-2">
-                            <p className="text-xs font-medium text-gray-900 line-clamp-1 hover:text-blue-600">
-                              {article.title}
-                            </p>
-                          </TableCell>
-                          <TableCell className="py-2">
-                            <p className="text-gray-600 line-clamp-2 text-xs leading-relaxed">
-                              {article.snippet}
-                            </p>
-                          </TableCell>
-                          <TableCell className="py-2">
-                            <div className="flex flex-wrap gap-1">
-                              {article.keywords.slice(0, 2).map((keyword, index) => (
-                                <span
-                                  key={index}
-                                  className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
-                                >
-                                  {keyword}
-                                </span>
-                              ))}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center py-2">
-                            <Badge
-                              className={`text-xs font-medium ${getSentimentBgColor(article.sentimentScore)}`}
-                            >
-                              {article.sentimentScore}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center py-2 text-xs">관련 뉴스가 없습니다.</p>
-              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Right: Charts */}
-        <div className="space-y-3">
-          {/* Combined Chart */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                가격 & 센티먼트 추이 (2주)
-              </CardTitle>
+        {/* Right Column */}
+        <div className="flex flex-col space-y-4">
+          
+          {/* Top Right - Key Summary */}
+          <Card className="flex-shrink-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold">🧠 핵심 요약</CardTitle>
             </CardHeader>
             <CardContent className="pt-1">
-              <CommodityChart 
-                commodityId={commodity.id} 
-                commodityName={commodity.name}
-              />
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-2">주요 현황 이유</h4>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {commodity.name}의 현재 센티먼트 점수는 {commodity.sentimentScore}로, 
+                    {commodity.sentimentScore >= 70 ? ' 매우 긍정적인' : 
+                     commodity.sentimentScore >= 50 ? ' 중립적인' : ' 부정적인'} 상황입니다.
+                    시장 동향과 글로벌 경제 지표가 주요 영향 요인으로 작용하고 있습니다.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">주요 키워드</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {commodity.keywords.map((keyword, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="bg-blue-100 text-blue-800 text-sm px-3 py-1 font-medium"
+                      >
+                        {keyword}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Additional Market Info */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center">
-                <BarChart3 className="w-4 h-4 mr-2" />
-                시장 지표
-              </CardTitle>
+          {/* Bottom Right - Related News */}
+          <Card className="flex-1">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold">📰 관련 뉴스</CardTitle>
             </CardHeader>
-            <CardContent className="pt-1 space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">현재 가격</span>
-                <span className="text-xs font-semibold">${commodity.price.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">일일 변동</span>
-                <span className={`text-xs font-semibold ${commodity.priceChange >= 0 ? 'text-sentiment-positive' : 'text-sentiment-negative'}`}>
-                  {commodity.priceChange >= 0 ? '▲' : '▼'}{Math.abs(commodity.priceChange)}%
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">센티먼트 점수</span>
-                <span className={`text-xs font-semibold ${commodity.sentimentScore >= 70 ? 'text-sentiment-positive' : commodity.sentimentScore >= 50 ? 'text-sentiment-neutral' : 'text-sentiment-negative'}`}>
-                  {commodity.sentimentScore}
-                </span>
-              </div>
+            <CardContent className="pt-1 h-[calc(100%-80px)]">
+              {isLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="h-16" />
+                  ))}
+                </div>
+              ) : news && news.length > 0 ? (
+                <div className="h-full overflow-y-auto space-y-3">
+                  {news.map((article) => (
+                    <div
+                      key={article.id}
+                      className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors shadow-sm"
+                      onClick={() => onNewsSelect(article)}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 flex-1 pr-3">
+                          {article.title}
+                        </h4>
+                        <Badge
+                          className={`text-xs font-medium ${getSentimentBgColor(article.sentimentScore)} flex-shrink-0`}
+                        >
+                          {article.sentimentScore}
+                        </Badge>
+                      </div>
+                      
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-3 leading-relaxed">
+                        {article.snippet}
+                      </p>
+                      
+                      <div className="flex flex-wrap gap-2">
+                        {article.keywords.slice(0, 3).map((keyword, index) => (
+                          <span
+                            key={index}
+                            className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium"
+                          >
+                            {keyword}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-gray-500 text-center">관련 뉴스가 없습니다.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

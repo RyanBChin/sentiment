@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, TrendingUp, BarChart3 } from "lucide-react";
+import CommodityChart from "@/components/commodity-chart";
 import type { Commodity, News } from "@shared/schema";
 
 interface CommodityDetailProps {
@@ -172,40 +173,46 @@ export default function CommodityDetail({ commodity, onBack, onNewsSelect }: Com
 
         {/* Right: Charts */}
         <div className="space-y-3">
-          {/* Price Trend Chart */}
+          {/* Combined Chart */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold flex items-center">
                 <TrendingUp className="w-4 h-4 mr-2" />
-                가격 흐름 (2주)
+                가격 & 센티먼트 추이 (2주)
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-1">
-              <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <BarChart3 className="w-8 h-8 mx-auto mb-1" />
-                  <p className="text-xs">가격 추세 차트</p>
-                  <p className="text-xs">차트 구현 예정</p>
-                </div>
-              </div>
+              <CommodityChart 
+                commodityId={commodity.id} 
+                commodityName={commodity.name}
+              />
             </CardContent>
           </Card>
 
-          {/* Sentiment Score Trend Chart */}
+          {/* Additional Market Info */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold flex items-center">
                 <BarChart3 className="w-4 h-4 mr-2" />
-                점수 흐름 (2주)
+                시장 지표
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-1">
-              <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <TrendingUp className="w-8 h-8 mx-auto mb-1" />
-                  <p className="text-xs">센티먼트 점수 차트</p>
-                  <p className="text-xs">차트 구현 예정</p>
-                </div>
+            <CardContent className="pt-1 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">현재 가격</span>
+                <span className="text-xs font-semibold">${commodity.price.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">일일 변동</span>
+                <span className={`text-xs font-semibold ${commodity.priceChange >= 0 ? 'text-sentiment-positive' : 'text-sentiment-negative'}`}>
+                  {commodity.priceChange >= 0 ? '▲' : '▼'}{Math.abs(commodity.priceChange)}%
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">센티먼트 점수</span>
+                <span className={`text-xs font-semibold ${commodity.sentimentScore >= 70 ? 'text-sentiment-positive' : commodity.sentimentScore >= 50 ? 'text-sentiment-neutral' : 'text-sentiment-negative'}`}>
+                  {commodity.sentimentScore}
+                </span>
               </div>
             </CardContent>
           </Card>

@@ -29,6 +29,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get commodity history
+  app.get("/api/commodities/:id/history", async (req, res) => {
+    try {
+      const commodityId = parseInt(req.params.id);
+      const history = await storage.getCommodityHistory(commodityId);
+      res.json(history);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch commodity history" });
+    }
+  });
+
   // Get news by commodity ID
   app.get("/api/commodities/:id/news", async (req, res) => {
     try {

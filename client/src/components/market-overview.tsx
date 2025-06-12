@@ -120,19 +120,19 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
             
             <SaasCardContent>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-neutral font-medium">센티먼트 점수</span>
+                <span className="text-base text-neutral-dark font-semibold">센티먼트 점수</span>
                 <span className="text-2xl font-bold text-neutral-dark">{commodity.sentimentScore.toFixed(1)}</span>
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm text-neutral font-medium">현재가격</span>
+                <span className="text-base text-neutral-dark font-semibold">현재가격</span>
                 <span className="text-lg font-bold text-neutral-dark">
                   {commodity.price.toLocaleString()}
                 </span>
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm text-neutral font-medium">변동률</span>
+                <span className="text-base text-neutral-dark font-semibold">변동률</span>
                 <div className="flex items-center">
                   <span className={`text-lg font-bold text-neutral-dark`}>
                     {commodity.priceChange >= 0 ? '+' : ''}{commodity.priceChange.toFixed(2)}%

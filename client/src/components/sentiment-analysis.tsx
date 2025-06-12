@@ -139,182 +139,189 @@ export default function SentimentAnalysis() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="h-screen overflow-hidden p-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Sentiment-Price Fit Score 분석</h1>
-        <p className="text-gray-600">품목별 센티먼트 점수와 실제 가격 변동의 일치율을 분석합니다</p>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Sentiment-Price Fit Score 분석</h1>
+        <p className="text-gray-600 text-sm">품목별 센티먼트 점수와 실제 가격 변동의 일치율을 분석합니다</p>
       </div>
 
-      {/* Score Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {fitScoreData.map((commodity) => (
-          <Card key={commodity.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">
-                  {commodity.name}
-                </CardTitle>
-                <div className="flex items-center">
-                  {commodity.recentTrend === 'up' && <TrendingUp className="w-4 h-4 text-green-600" />}
-                  {commodity.recentTrend === 'down' && <TrendingDown className="w-4 h-4 text-red-600" />}
-                  {commodity.recentTrend === 'stable' && <BarChart3 className="w-4 h-4 text-gray-600" />}
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Fit Score */}
-                <div className="text-center">
-                  <div className={`text-4xl font-bold ${getScoreColor(commodity.fitScore)} mb-2`}>
-                    {commodity.fitScore}점
+      <div className="grid grid-cols-12 gap-6" style={{ height: 'calc(100vh - 160px)' }}>
+        {/* Score Cards Grid - Takes most of the space */}
+        <div className="col-span-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 h-full">
+            {fitScoreData.map((commodity) => (
+              <Card key={commodity.id} className="hover:shadow-lg transition-shadow flex flex-col">
+                <CardHeader className="pb-2 flex-shrink-0">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base font-semibold">
+                      {commodity.name}
+                    </CardTitle>
+                    <div className="flex items-center">
+                      {commodity.recentTrend === 'up' && <TrendingUp className="w-4 h-4 text-green-600" />}
+                      {commodity.recentTrend === 'down' && <TrendingDown className="w-4 h-4 text-red-600" />}
+                      {commodity.recentTrend === 'stable' && <BarChart3 className="w-4 h-4 text-gray-600" />}
+                    </div>
                   </div>
-                  <Badge className={getScoreBgColor(commodity.fitScore)}>
-                    {commodity.evaluation}
-                  </Badge>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="space-y-2">
-                  <Progress value={commodity.fitScore} className="h-3" />
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>0점</span>
-                    <span>100점</span>
-                  </div>
-                </div>
-
-                {/* Match Statistics */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">2주간 일치율</span>
-                    <span className="font-semibold">
-                      {commodity.matchDays}/{commodity.totalDays}일
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">상관계수</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-semibold">{commodity.correlation}</span>
-                      <Badge variant="secondary" className={getEvaluationColor(commodity.evaluation)}>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="space-y-3 flex-1">
+                    {/* Fit Score */}
+                    <div className="text-center">
+                      <div className={`text-3xl font-bold ${getScoreColor(commodity.fitScore)} mb-1`}>
+                        {commodity.fitScore}점
+                      </div>
+                      <Badge className={getScoreBgColor(commodity.fitScore)}>
                         {commodity.evaluation}
                       </Badge>
                     </div>
-                  </div>
-                </div>
 
-                {/* Detail Button */}
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => setSelectedCommodity(commodity)}
-                    >
-                      <Eye className="w-4 h-4 mr-2" />
-                      상세보기
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>{commodity.name} 적합도 상세 분석</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-6">
-                      {/* Score Trend */}
-                      <div>
-                        <h4 className="font-semibold mb-3">주간 점수 변화</h4>
-                        <div className="flex items-end space-x-4 h-32">
-                          {commodity.details.weeklyScores.map((score, index) => (
-                            <div key={index} className="flex flex-col items-center flex-1">
-                              <div 
-                                className="bg-blue-500 rounded-t w-full"
-                                style={{ height: `${(score / 100) * 100}%` }}
-                              />
-                              <span className="text-sm mt-2">Week {index + 1}</span>
-                              <span className="text-xs text-gray-600">{score}점</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Matching Analysis */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="font-semibold mb-2 text-green-700">일치 날짜</h4>
-                          <div className="bg-green-50 p-3 rounded-lg">
-                            <div className="flex flex-wrap gap-1">
-                              {commodity.details.matchingDates.map((date, index) => (
-                                <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 text-xs">
-                                  {date}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold mb-2 text-red-700">불일치 날짜</h4>
-                          <div className="bg-red-50 p-3 rounded-lg">
-                            <div className="flex flex-wrap gap-1">
-                              {commodity.details.nonMatchingDates.map((date, index) => (
-                                <Badge key={index} variant="secondary" className="bg-red-100 text-red-800 text-xs">
-                                  {date}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Explanation */}
-                      <div>
-                        <h4 className="font-semibold mb-2">분석 설명</h4>
-                        <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg">
-                          {commodity.details.explanation}
-                        </p>
+                    {/* Progress Bar */}
+                    <div className="space-y-1">
+                      <Progress value={commodity.fitScore} className="h-2" />
+                      <div className="flex justify-between text-xs text-gray-600">
+                        <span>0점</span>
+                        <span>100점</span>
                       </div>
                     </div>
-                  </DialogContent>
-                </Dialog>
+
+                    {/* Match Statistics */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600">2주간 일치율</span>
+                        <span className="font-semibold text-sm">
+                          {commodity.matchDays}/{commodity.totalDays}일
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600">상관계수</span>
+                        <div className="flex items-center space-x-1">
+                          <span className="font-semibold text-sm">{commodity.correlation}</span>
+                          <Badge variant="secondary" className={`${getEvaluationColor(commodity.evaluation)} text-xs`}>
+                            {commodity.evaluation}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Detail Button */}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="w-full mt-3"
+                        onClick={() => setSelectedCommodity(commodity)}
+                      >
+                        <Eye className="w-3 h-3 mr-1" />
+                        상세보기
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>{commodity.name} 적합도 상세 분석</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-6">
+                        {/* Score Trend */}
+                        <div>
+                          <h4 className="font-semibold mb-3">주간 점수 변화</h4>
+                          <div className="flex items-end space-x-4 h-32">
+                            {commodity.details.weeklyScores.map((score, index) => (
+                              <div key={index} className="flex flex-col items-center flex-1">
+                                <div 
+                                  className="bg-blue-500 rounded-t w-full"
+                                  style={{ height: `${(score / 100) * 100}%` }}
+                                />
+                                <span className="text-sm mt-2">Week {index + 1}</span>
+                                <span className="text-xs text-gray-600">{score}점</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Matching Analysis */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-semibold mb-2 text-green-700">일치 날짜</h4>
+                            <div className="bg-green-50 p-3 rounded-lg">
+                              <div className="flex flex-wrap gap-1">
+                                {commodity.details.matchingDates.map((date, index) => (
+                                  <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                                    {date}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold mb-2 text-red-700">불일치 날짜</h4>
+                            <div className="bg-red-50 p-3 rounded-lg">
+                              <div className="flex flex-wrap gap-1">
+                                {commodity.details.nonMatchingDates.map((date, index) => (
+                                  <Badge key={index} variant="secondary" className="bg-red-100 text-red-800 text-xs">
+                                    {date}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Explanation */}
+                        <div>
+                          <h4 className="font-semibold mb-2">분석 설명</h4>
+                          <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg">
+                            {commodity.details.explanation}
+                          </p>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Summary Stats Sidebar */}
+        <div className="col-span-4">
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">전체 분석 요약</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-600">
+                    {Math.round(fitScoreData.reduce((acc, item) => acc + item.fitScore, 0) / fitScoreData.length)}점
+                  </div>
+                  <p className="text-sm text-gray-600">전체 평균 적합도</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-600">
+                    {fitScoreData.filter(item => item.fitScore >= 80).length}개
+                  </div>
+                  <p className="text-sm text-gray-600">고적합도 품목 (80점+)</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-orange-600">
+                    0.{Math.round(fitScoreData.reduce((acc, item) => acc + item.correlation, 0) / fitScoreData.length * 100)}
+                  </div>
+                  <p className="text-sm text-gray-600">평균 상관계수</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-purple-600">
+                    {Math.round(fitScoreData.reduce((acc, item) => acc + (item.matchDays / item.totalDays * 100), 0) / fitScoreData.length)}%
+                  </div>
+                  <p className="text-sm text-gray-600">전체 일치율</p>
+                </div>
               </div>
             </CardContent>
           </Card>
-        ))}
+        </div>
       </div>
-
-      {/* Summary Stats */}
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>전체 분석 요약</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {Math.round(fitScoreData.reduce((acc, item) => acc + item.fitScore, 0) / fitScoreData.length)}점
-              </div>
-              <p className="text-sm text-gray-600">전체 평균 적합도</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {fitScoreData.filter(item => item.fitScore >= 80).length}개
-              </div>
-              <p className="text-sm text-gray-600">고적합도 품목 (80점+)</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                0.{Math.round(fitScoreData.reduce((acc, item) => acc + item.correlation, 0) / fitScoreData.length * 100)}
-              </div>
-              <p className="text-sm text-gray-600">평균 상관계수</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {Math.round(fitScoreData.reduce((acc, item) => acc + (item.matchDays / item.totalDays * 100), 0) / fitScoreData.length)}%
-              </div>
-              <p className="text-sm text-gray-600">전체 일치율</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

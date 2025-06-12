@@ -68,6 +68,10 @@ export interface IStorage {
   // Price History - 가격 데이터
   createPriceHistory(priceData: InsertPriceHistory): Promise<PriceHistory>;
   getPriceHistory(commodity: string, startDate?: string, endDate?: string): Promise<PriceHistory[]>;
+  
+  // Market Overview Extensions
+  getTopGainersLosers(): Promise<any>;
+  getLatestNewsFeed(limit?: number): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -658,6 +662,106 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(priceHistory)
       .where(eq(priceHistory.commodity, commodity))
       .orderBy(desc(priceHistory.date));
+  }
+
+  async getTopGainersLosers(): Promise<any> {
+    // Get latest 7 days of price data for all commodities
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    const priceData = await db
+      .select()
+      .from(priceHistory)
+      .where(gte(priceHistory.date, sevenDaysAgo.toISOString().split('T')[0]))
+      .orderBy(priceHistory.commodity, desc(priceHistory.date));
+
+    // Calculate percentage changes
+    const commodityChanges = new Map();
+    
+    for (const record of priceData) {
+      const price = parseFloat(record.closingPrice || '0');
+      if (!commodityChanges.has(record.commodity)) {
+        commodityChanges.set(record.commodity, {
+          commodity: record.commodity,
+          latest: price,
+          oldest: price,
+          latestDate: record.date,
+          oldestDate: record.date
+        });
+      } else {
+        const existing = commodityChanges.get(record.commodity);
+        if (record.date > existing.latestDate) {
+          existing.latest = price;
+          existing.latestDate = record.date;
+        }
+        if (record.date < existing.oldestDate) {
+          existing.oldest = price;
+          existing.oldestDate = record.date;
+        }
+      }
+    }
+
+    // Calculate percentage changes and sort
+    const changes = Array.from(commodityChanges.values()).map(item => ({
+      commodity: item.commodity,
+      change: ((item.latest - item.oldest) / item.oldest) * 100,
+      emoji: this.getCommodityEmoji(item.commodity)
+    }));
+
+    changes.sort((a, b) => b.change - a.change);
+
+    return {
+      gainers: changes.filter(c => c.change > 0).slice(0, 3),
+      losers: changes.filter(c => c.change < 0).slice(-3).reverse()
+    };
+  }
+
+  async getLatestNewsFeed(limit = 10): Promise<any[]> {
+    const newsData = await db
+      .select({
+        id: rawNews.id,
+        title: rawNews.title,
+        publishedAt: rawNews.publishedTime,
+        commodity: rawNews.commodity
+      })
+      .from(rawNews)
+      .orderBy(desc(rawNews.publishedTime))
+      .limit(limit);
+
+    return newsData.map(news => ({
+      ...news,
+      emoji: this.getCommodityEmoji(news.commodity || ''),
+      timeAgo: this.getTimeAgo(news.publishedAt?.toString() || new Date().toISOString())
+    }));
+  }
+
+  private getCommodityEmoji(commodity: string): string {
+    const emojiMap: { [key: string]: string } = {
+      'corn': '🌽',
+      'wheat': '🌾', 
+      'copper': '🥉',
+      'wti_oil': '🛢️',
+      'gold': '🥇',
+      '옥수수': '🌽',
+      '밀': '🌾',
+      '구리': '🥉',
+      'WTI 오일': '🛢️',
+      '금': '🥇'
+    };
+    return emojiMap[commodity] || '📈';
+  }
+
+  private getTimeAgo(publishedAt: string): string {
+    const now = new Date();
+    const published = new Date(publishedAt);
+    const diffMs = now.getTime() - published.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 60) return `${diffMins}분 전`;
+    if (diffHours < 24) return `${diffHours}시간 전`;
+    return `${diffDays}일 전`;
   }
 }
 

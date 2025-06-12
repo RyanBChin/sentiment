@@ -144,6 +144,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Market Overview Expansion Endpoints
+  app.get("/api/top-gainers-losers", async (req, res) => {
+    try {
+      const data = await storage.getTopGainersLosers();
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch gainers/losers data" });
+    }
+  });
+
+  app.get("/api/latest-news-feed", async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const news = await storage.getLatestNewsFeed(limit);
+      res.json(news);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch news feed" });
+    }
+  });
+
+  app.get("/api/price-history/:commodity", async (req, res) => {
+    try {
+      const { commodity } = req.params;
+      const { startDate, endDate } = req.query;
+      const history = await storage.getPriceHistory(
+        commodity, 
+        startDate as string, 
+        endDate as string
+      );
+      res.json(history);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch price history" });
+    }
+  });
+
   // Get latest news
   app.get("/api/latest-news", async (req, res) => {
     try {

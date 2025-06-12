@@ -1,0 +1,133 @@
+📄 MarketOverview Expansion Specification — SaaS Production Version
+Project: MarketOverview v2 — SaaS Dashboard Expansion
+Audience: Development Team / Zapier Team / Designer
+Date: 2025-06-13
+
+1️⃣ 📌 Existing MarketOverview Structure
+Section	Description
+Sentiment Alert Box	SaasCard (variant="gradient")
+Page Header	SaasPageHeader ("Market Overview")
+Commodity Summary Cards	SaasGrid cols={5} — Commodity price, sentiment, change rate, keywords
+
+2️⃣ 📌 New Expansion Sections
+A. 🔷 Trend Snapshot (Mini Sparklines)
+Purpose
+Provide a compact visualization of 7-day price trends for each commodity.
+
+Components
+Field	Description
+Commodity Name	Emoji + Name (Corn 🌽, Wheat 🌾, etc.)
+Sparkline Chart	7-day price trend
+% Change	Total change over 7 days (+3.2%, -1.1%, etc.)
+
+Design
+Layout: SaasGrid cols={5}
+
+Chart: width 80-100px, height 40px
+
+Change Text: text-lg font-bold text-neutral-dark
+
+Colors:
+
+Uptrend: text-green-500
+
+Downtrend: text-red-500
+
+Position
+Insert directly below Commodity Summary Cards
+
+B. 🔷 Top Gainers & Losers
+Purpose
+Highlight the highest price movers over the recent period.
+
+Components
+Section	Content	Example
+Top Gainers	Top 3 gainers	WTI +4.5%, Corn +3.2%
+Top Losers	Top 3 losers	Copper -2.8%, Wheat -1.1%
+
+Design
+Split Card Layout (Left: Gainers, Right: Losers)
+
+Each item includes:
+
+Commodity name
+
+% change (text-lg font-semibold)
+
+Icons (TrendingUp, TrendingDown)
+
+Colors
+Movement	Color
+Up	text-green-500
+Down	text-red-500
+
+Position
+Insert below Trend Snapshot
+
+C. 🔷 Latest News Feed (10 items)
+Purpose
+Display latest headline news for user awareness.
+
+Components
+Field	Description
+News Title	Latest headline
+Timestamp	(e.g., 10 minutes ago)
+Commodity Tag	Commodity association (emoji/icon)
+
+Design
+Vertical list card
+
+Each item includes:
+
+Commodity icon + title (font-medium text-neutral-dark)
+
+Timestamp (text-xs text-neutral-500)
+
+On click: navigate to NewsDetail
+
+Position
+Insert below Top Gainers & Losers
+
+Quantity
+Display latest 10 items
+
+3️⃣ 📌 Full Layout Flow Summary
+scss
+복사
+편집
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sentiment Alert (SaasCard gradient)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Page Header (Market Overview)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Commodity Summary Cards (SaasGrid cols=5)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Trend Snapshot (Mini Sparklines)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Top Gainers & Losers (Split Card)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Latest News Feed (Vertical List of 10 items)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4️⃣ 📌 Suggested Component Breakdown
+Component Name	Description
+TrendSnapshot.tsx	New sparkline section
+TopGainersLosers.tsx	New split card component
+LatestNewsFeed.tsx	New vertical list component
+(Existing)	Sentiment Alert & Commodity Summary remain intact
+
+5️⃣ 📌 API Calls Overview
+API Endpoint	Purpose
+/api/commodities	Commodity summary
+/api/price-history	7-day sparkline data
+/api/top-gainers-losers	Movers data
+/api/latest-news	News Feed (limit 10)
+
+6️⃣ 📌 Implementation Priority Suggestion
+Phase	Task
+Phase 1	Implement Trend Snapshot
+Phase 2	Implement Gainers & Losers
+Phase 3	Implement Latest News Feed
+Phase 4	Global design polish & micro-interaction
+
+✅ This spec is fully production-ready for delivery to your Zapier development or external SaaS development team.
+

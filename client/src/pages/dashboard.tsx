@@ -7,7 +7,7 @@ import NewsDetail from "@/components/news-detail";
 import Chatbot from "@/components/chatbot";
 import EmailAlerts from "@/components/email-alerts";
 import SentimentAnalysis from "@/components/sentiment-analysis";
-import { ChartBar, Bot, Bell, Menu, BarChart3 } from "lucide-react";
+import { ChartBar, Bot, Bell, Menu, Search, BarChart3 } from "lucide-react";
 import type { Commodity, News } from "@shared/schema";
 
 type ActiveSection = 'market' | 'analysis' | 'chatbot' | 'alerts' | 'detail' | 'news';
@@ -40,7 +40,7 @@ export default function Dashboard() {
 
   const tabConfig = [
     { id: 'market', label: '시황', icon: ChartBar },
-    { id: 'analysis', label: '분석', icon: BarChart3 },
+    { id: 'analysis', label: '분석', icon: Search },
     { id: 'chatbot', label: '챗봇', icon: Bot },
     { id: 'alerts', label: '알림 설정', icon: Bell }
   ];

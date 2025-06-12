@@ -52,6 +52,8 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
 
 export const insertEmailAlertSchema = createInsertSchema(emailAlerts).omit({
   id: true,
+}).extend({
+  frequency: z.enum(["hourly", "daily", "weekly", "on_update"])
 });
 
 export type Commodity = typeof commodities.$inferSelect;

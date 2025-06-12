@@ -16,7 +16,7 @@ import { apiRequest } from "@/lib/queryClient";
 const alertFormSchema = z.object({
   email: z.string().email("올바른 이메일 주소를 입력해주세요"),
   commodities: z.array(z.string()).min(1, "최소 하나의 상품을 선택해주세요"),
-  frequency: z.enum(["hourly", "daily", "weekly"]),
+  frequency: z.enum(["hourly", "daily", "weekly", "on_update"]),
 });
 
 type AlertFormData = z.infer<typeof alertFormSchema>;
@@ -73,7 +73,8 @@ export default function EmailAlerts() {
   const frequencyOptions = [
     { value: "hourly", label: "시간별 (Hourly)" },
     { value: "daily", label: "일별 (Daily)" },
-    { value: "weekly", label: "주별 (Weekly)" }
+    { value: "weekly", label: "주별 (Weekly)" },
+    { value: "on_update", label: "업데이트될 때마다 (On Update)" }
   ];
 
   const handleCommodityChange = (commodity: string, checked: boolean) => {

@@ -1,0 +1,93 @@
+Update the existing Tailwind + JavaScript web app with the following new features:
+
+---
+
+🔹 [1] For each commodity in the "시황" section:
+- Add 2–3 **sample news articles** as dummy data.
+- Each article includes:
+  - Title
+  - Short content
+  - Sentiment Score
+- Display them in a small table under the commodity card or inside the detailed view section.
+- Each row (news article) should be clickable.
+- When clicked, it should open a new **detailed news view** section (you can hide/show this section via JS).
+
+Use the following sample structure:
+
+**Sample for Corn:**
+```json
+[
+  {
+    "title": "US Drought Threatens Corn Supply",
+    "content": "Dry conditions across the Midwest could severely impact corn yields...",
+    "score": 82.3,
+    "keywords": ["drought", "yield", "Midwest"]
+  },
+  {
+    "title": "Export Demand for Corn Surges",
+    "content": "Strong demand from Southeast Asia drives US corn exports upward...",
+    "score": 75.6,
+    "keywords": ["export", "Southeast Asia", "demand"]
+  }
+]
+🔹 [2] Add a new section for 뉴스 상세 보기 (News Detail View):
+
+This should appear when a news row is clicked.
+
+Show the following info in this view:
+
+Title
+
+Sentiment Score
+
+Keywords (displayed as small badge tags)
+
+Full Content (dummy text OK)
+
+Add a "Back" button to return to the previous screen (commodity detail)
+
+Design with Tailwind (cards, padding, etc.)
+
+🔹 [3] Update the 챗봇 탭's 알림 주기 선택:
+
+In the Email Alert section:
+
+Add a new option for “업데이트될 때마다 (On Update)” to the existing frequency options:
+
+Hourly
+
+Daily
+
+Weekly
+
+→ Now also: "On Update"
+
+You can implement this with a radio button or dropdown, and place it just like the others.
+
+Make sure this option is selectable and included when submitting the alert form (even if it’s just dummy logic for now).
+
+Style reminder:
+
+Keep all styles consistent using Tailwind
+
+Use hidden / block JS toggles for page switching
+
+Show example news and navigation interactions clearly
+
+Use dummy JSON for now, but structure the HTML so it can be extended with dynamic data later.
+
+yaml
+Copy
+Edit
+
+---
+
+## ✅ 추가 팁 (구현 시 참고용)
+
+- **뉴스 더미 데이터**는 HTML에 `<script>`로 JSON 배열로 넣고, JS에서 랜더링해도 좋습니다.
+- **뉴스 상세 화면**은 한 개의 숨겨진 div로 만들어놓고, 클릭 시 콘텐츠를 채우는 방식이 효율적입니다.
+- `"업데이트될 때마다"`는 `<input type="radio">`에 value로 `"on_update"` 주면 충분합니다.
+
+---
+
+필요하시다면 위 프롬프트를 기반으로 한 **HTML/JS 코드 샘플**도 만들어드릴 수 있어요. 말씀만 주세요!

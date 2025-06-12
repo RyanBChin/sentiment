@@ -6,10 +6,11 @@ import CommodityDetail from "@/components/commodity-detail";
 import NewsDetail from "@/components/news-detail";
 import Chatbot from "@/components/chatbot";
 import EmailAlerts from "@/components/email-alerts";
-import { ChartBar, Bot, Bell, Menu } from "lucide-react";
+import SentimentAnalysis from "@/components/sentiment-analysis";
+import { ChartBar, Bot, Bell, Menu, BarChart3 } from "lucide-react";
 import type { Commodity, News } from "@shared/schema";
 
-type ActiveSection = 'market' | 'chatbot' | 'alerts' | 'detail' | 'news';
+type ActiveSection = 'market' | 'analysis' | 'chatbot' | 'alerts' | 'detail' | 'news';
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState<ActiveSection>('market');
@@ -39,6 +40,7 @@ export default function Dashboard() {
 
   const tabConfig = [
     { id: 'market', label: '시황', icon: ChartBar },
+    { id: 'analysis', label: '분석', icon: BarChart3 },
     { id: 'chatbot', label: '챗봇', icon: Bot },
     { id: 'alerts', label: '알림 설정', icon: Bell }
   ];
@@ -47,6 +49,8 @@ export default function Dashboard() {
     switch (activeSection) {
       case 'market':
         return <MarketOverview onCommoditySelect={handleCommoditySelect} />;
+      case 'analysis':
+        return <SentimentAnalysis />;
       case 'detail':
         return (
           <CommodityDetail

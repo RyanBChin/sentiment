@@ -417,56 +417,58 @@ export class MemStorage implements IStorage {
 // Database Storage Implementation
 export class DatabaseStorage implements IStorage {
   async getCommodities(): Promise<Commodity[]> {
-    // Get commodities with data from daily_market_summary and price_history
-    const result = await db
-      .select({
-        id: commodities.id,
-        name: commodities.name,
-        englishName: dailyMarketSummary.commodity,
-        sentimentScore: dailyMarketSummary.dailySentimentScore,
-        price: priceHistory.closingPrice,
-        priceChange: commodities.priceChange, // Will calculate this separately
-        keywords: dailyMarketSummary.dailyKeywords,
-      })
-      .from(commodities)
-      .leftJoin(
-        dailyMarketSummary,
-        eq(commodities.name, dailyMarketSummary.commodity)
-      )
-      .leftJoin(
-        priceHistory,
-        eq(commodities.name, priceHistory.commodity)
-      )
-      .where(eq(dailyMarketSummary.date, '2025-01-12'))
-      .orderBy(commodities.id);
+    // Get basic commodity data first
+    const commodityList = await db.select().from(commodities).orderBy(commodities.id);
+    
+    // For each commodity, get the latest data from other tables
+    const commoditiesWithData = await Promise.all(
+      commodityList.map(async (commodity) => {
+        // Get latest daily market summary
+        const [latestSummary] = await db
+          .select()
+          .from(dailyMarketSummary)
+          .where(eq(dailyMarketSummary.commodity, commodity.name))
+          .orderBy(desc(dailyMarketSummary.date))
+          .limit(1);
 
-    // Calculate price change from the last two days
-    const commoditiesWithPriceChange = await Promise.all(
-      result.map(async (commodity) => {
-        if (commodity.name) {
-          const priceHistory = await this.getPriceHistory(commodity.name);
-          let priceChange = 0;
-          if (priceHistory.length >= 2) {
-            const current = parseFloat(priceHistory[0].closingPrice || '0');
-            const previous = parseFloat(priceHistory[1].closingPrice || '0');
-            priceChange = previous > 0 ? ((current - previous) / previous) * 100 : 0;
-          }
-          
-          return {
-            ...commodity,
-            sentimentScore: parseFloat(commodity.sentimentScore || '0'),
-            price: parseFloat(commodity.price || '0'),
-            priceChange: parseFloat(priceChange.toFixed(2)),
-            keywords: Array.isArray((commodity.keywords as any)?.top_keywords) 
-              ? (commodity.keywords as any).top_keywords 
-              : ['시장분석', '동향']
-          };
+        // Get latest price
+        const [latestPrice] = await db
+          .select()
+          .from(priceHistory)
+          .where(eq(priceHistory.commodity, commodity.name))
+          .orderBy(desc(priceHistory.date))
+          .limit(1);
+
+        // Get previous price for change calculation
+        const previousPrices = await db
+          .select()
+          .from(priceHistory)
+          .where(eq(priceHistory.commodity, commodity.name))
+          .orderBy(desc(priceHistory.date))
+          .limit(2);
+
+        let priceChange = 0;
+        if (previousPrices.length >= 2) {
+          const current = parseFloat(previousPrices[0].closingPrice || '0');
+          const previous = parseFloat(previousPrices[1].closingPrice || '0');
+          priceChange = previous > 0 ? ((current - previous) / previous) * 100 : 0;
         }
-        return commodity;
+
+        return {
+          id: commodity.id,
+          name: commodity.name,
+          englishName: commodity.englishName,
+          sentimentScore: latestSummary ? parseFloat(latestSummary.dailySentimentScore || '0') : commodity.sentimentScore,
+          price: latestPrice ? parseFloat(latestPrice.closingPrice || '0') : commodity.price,
+          priceChange: parseFloat(priceChange.toFixed(2)),
+          keywords: latestSummary?.dailyKeywords 
+            ? this.extractKeywords(latestSummary.dailyKeywords)
+            : commodity.keywords || ['시장분석', '동향']
+        };
       })
     );
 
-    return commoditiesWithPriceChange as Commodity[];
+    return commoditiesWithData as Commodity[];
   }
 
   async getCommodity(id: number): Promise<Commodity | undefined> {
@@ -521,7 +523,7 @@ export class DatabaseStorage implements IStorage {
       commodityId: commodityId,
       title: item.title || '',
       content: item.content || '',
-      snippet: (item.content || '').substring(0, 100) + '...',
+      snippet: typeof item.content === 'string' ? item.content.substring(0, 100) + '...' : '내용을 불러오는 중...',
       sentimentScore: parseFloat(item.sentimentScore?.toString() || '0'),
       keywords: this.extractKeywords(item.keywords),
       publishedAt: item.publishedAt || new Date(),
@@ -555,7 +557,6 @@ export class DatabaseStorage implements IStorage {
         commodityId: commodities.id,
         title: rawNews.title,
         content: rawNews.content,
-        snippet: rawNews.content, // Use content as snippet for now
         sentimentScore: newsAnalysisResults.sentimentScore,
         keywords: newsAnalysisResults.keywords,
         publishedAt: rawNews.publishedTime,
@@ -568,10 +569,14 @@ export class DatabaseStorage implements IStorage {
       .limit(10);
 
     return result.map(item => ({
-      ...item,
+      id: item.id,
+      commodityId: item.commodityId || 1,
+      title: item.title || '',
+      content: item.content || '',
+      snippet: typeof item.content === 'string' ? item.content.substring(0, 100) + '...' : '내용을 불러오는 중...',
       sentimentScore: parseFloat(item.sentimentScore?.toString() || '0'),
       keywords: this.extractKeywords(item.keywords),
-      snippet: item.content?.substring(0, 100) + '...' || '내용을 불러오는 중...'
+      publishedAt: item.publishedAt || new Date(),
     })) as News[];
   }
 

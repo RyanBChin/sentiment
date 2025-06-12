@@ -127,7 +127,7 @@ export default function EmailAlerts() {
                           handleCommodityChange(option.value, checked as boolean)
                         }
                       />
-                      <Label htmlFor={option.value} className="text-sm text-gray-700">
+                      <Label htmlFor={option.value} className="text-sm text-foreground">
                         {option.label}
                       </Label>
                     </div>
@@ -140,7 +140,7 @@ export default function EmailAlerts() {
 
               {/* Alert Frequency */}
               <div>
-                <Label className="text-sm font-semibold text-gray-900 mb-2 block">
+                <Label className="text-sm font-semibold text-foreground mb-2 block">
                   알림 주기
                 </Label>
                 <RadioGroup
@@ -151,7 +151,7 @@ export default function EmailAlerts() {
                     {frequencyOptions.map((option) => (
                       <div key={option.value} className="flex items-center space-x-2">
                         <RadioGroupItem value={option.value} id={option.value} />
-                        <Label htmlFor={option.value} className="text-sm text-gray-700">
+                        <Label htmlFor={option.value} className="text-sm text-foreground">
                           {option.label}
                         </Label>
                       </div>

@@ -150,12 +150,12 @@ export default function Chatbot() {
                     <div
                       className={`max-w-md px-4 py-3 rounded-lg ${
                         message.type === 'user'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white text-gray-900 shadow-sm border'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-card text-foreground shadow-sm border border-border'
                       }`}
                     >
                       <div className="flex items-start space-x-2">
-                        {message.type === 'bot' && <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-blue-600" />}
+                        {message.type === 'bot' && <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />}
                         {message.type === 'user' && <User className="w-4 h-4 mt-1 flex-shrink-0" />}
                         <div className="flex-1">
                           <div 
@@ -189,10 +189,10 @@ export default function Chatbot() {
                 ))}
                 {chatMutation.isPending && (
                   <div className="flex justify-start">
-                    <div className="bg-white text-gray-900 px-4 py-3 rounded-lg shadow-sm border">
+                    <div className="bg-card text-foreground px-4 py-3 rounded-lg shadow-sm border border-border">
                       <div className="flex items-center space-x-2">
-                        <Bot className="w-4 h-4 text-blue-600" />
-                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                        <Bot className="w-4 h-4 text-primary" />
+                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
                         <span className="text-sm">분석 중...</span>
                       </div>
                     </div>
@@ -205,14 +205,14 @@ export default function Chatbot() {
               {/* Suggested Questions - Limited to 2 lines */}
               {messages.length === 0 && (
                 <div className="mb-3 flex-shrink-0">
-                  <h4 className="text-xs font-medium text-gray-700 mb-2">추천 질문</h4>
+                  <h4 className="text-xs font-medium text-muted-foreground mb-2">추천 질문</h4>
                   <div className="flex flex-wrap gap-1 max-h-[60px] overflow-hidden">
                     {suggestedQuestions.slice(0, 4).map((question, index) => (
                       <Button
                         key={index}
                         variant="outline"
                         size="sm"
-                        className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors flex-shrink-0 h-7"
+                        className="text-xs hover:bg-secondary hover:border-primary transition-colors flex-shrink-0 h-7"
                         onClick={() => {
                           setInputValue(question);
                           handleSubmit(question);

@@ -45,35 +45,52 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
     return (
       <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-slate-600 to-slate-700 shadow-lg">
         {name === '옥수수' && (
-          <svg viewBox="0 0 64 64" className="w-10 h-10 text-yellow-400 fill-current">
-            <path d="M32 8c-8 0-12 8-12 16v24c0 8 4 8 12 8s12 0 12-8V24c0-8-4-16-12-16z"/>
-            <path d="M28 16h8v32h-8z" className="text-yellow-300 fill-current"/>
+          <svg viewBox="0 0 64 64" className="w-12 h-12">
+            <ellipse cx="32" cy="32" rx="8" ry="20" fill="#FCD34D" />
+            <ellipse cx="32" cy="32" rx="6" ry="18" fill="#F59E0B" />
+            {/* Corn kernels */}
+            {Array.from({length: 12}).map((_, i) => (
+              <circle key={i} cx={28 + (i % 3) * 2} cy={18 + Math.floor(i / 3) * 3} r="1.5" fill="#FEF3C7" />
+            ))}
+            {Array.from({length: 12}).map((_, i) => (
+              <circle key={i+12} cx={30 + (i % 3) * 2} cy={20 + Math.floor(i / 3) * 3} r="1.5" fill="#FDE68A" />
+            ))}
           </svg>
         )}
         {name === '밀' && (
-          <svg viewBox="0 0 64 64" className="w-10 h-10 text-amber-400 fill-current">
-            <path d="M32 8l-4 8-4-4-4 8-4-4v32c0 4 4 8 8 8h8c4 0 8-4 8-8V16l-4 4-4-8z"/>
+          <svg viewBox="0 0 64 64" className="w-12 h-12">
+            <path d="M32 12 L30 16 L28 12 L26 16 L24 12 L22 16 L20 12 L18 16 L16 12 L32 48 L48 12 L46 16 L44 12 L42 16 L40 12 L38 16 L36 12 L34 16 Z" fill="#D97706" />
+            <path d="M32 12 L30 16 L28 12 L26 16 L24 12 L22 16 L20 12 L32 40 L44 12 L42 16 L40 12 L38 16 L36 12 L34 16 Z" fill="#F59E0B" />
+            <rect x="31" y="40" width="2" height="12" fill="#92400E" />
           </svg>
         )}
         {name === '구리' && (
-          <svg viewBox="0 0 64 64" className="w-10 h-10 text-orange-500 fill-current">
-            <circle cx="32" cy="32" r="20"/>
-            <circle cx="32" cy="32" r="12" className="text-orange-400 fill-current"/>
+          <svg viewBox="0 0 64 64" className="w-12 h-12">
+            <circle cx="32" cy="32" r="18" fill="#EA580C" />
+            <circle cx="32" cy="32" r="14" fill="#FB923C" />
+            <circle cx="32" cy="32" r="10" fill="#FDBA74" />
+            <circle cx="32" cy="32" r="6" fill="#EA580C" />
+            <path d="M24 24 L40 40 M40 24 L24 40" stroke="#7C2D12" strokeWidth="2" />
           </svg>
         )}
         {name === 'WTI유' && (
-          <svg viewBox="0 0 64 64" className="w-10 h-10 text-gray-700 fill-current">
-            <rect x="20" y="16" width="24" height="32" rx="2"/>
-            <rect x="18" y="20" width="28" height="4" className="text-gray-600 fill-current"/>
-            <rect x="18" y="28" width="28" height="4" className="text-gray-600 fill-current"/>
-            <rect x="18" y="36" width="28" height="4" className="text-gray-600 fill-current"/>
-            <text x="32" y="34" textAnchor="middle" className="text-white text-xs font-bold fill-current">OIL</text>
+          <svg viewBox="0 0 64 64" className="w-12 h-12">
+            <ellipse cx="32" cy="38" rx="14" ry="18" fill="#374151" />
+            <ellipse cx="32" cy="36" rx="12" ry="16" fill="#4B5563" />
+            <ellipse cx="32" cy="34" rx="10" ry="14" fill="#6B7280" />
+            <rect x="28" y="20" width="8" height="8" rx="1" fill="#374151" />
+            <rect x="30" y="18" width="4" height="4" rx="1" fill="#1F2937" />
+            <circle cx="32" cy="30" r="2" fill="#111827" />
+            <text x="32" y="42" textAnchor="middle" className="text-white text-xs font-bold" fill="white">OIL</text>
           </svg>
         )}
         {name === '금' && (
-          <svg viewBox="0 0 64 64" className="w-10 h-10 text-yellow-500 fill-current">
-            <rect x="16" y="24" width="32" height="16" rx="2"/>
-            <rect x="20" y="28" width="24" height="8" className="text-yellow-400 fill-current"/>
+          <svg viewBox="0 0 64 64" className="w-12 h-12">
+            <rect x="20" y="28" width="24" height="12" rx="2" fill="#F59E0B" />
+            <rect x="22" y="30" width="20" height="8" rx="1" fill="#FBBF24" />
+            <rect x="24" y="32" width="16" height="4" rx="1" fill="#FCD34D" />
+            <rect x="28" y="24" width="8" height="4" rx="1" fill="#F59E0B" />
+            <circle cx="32" cy="26" r="1" fill="#92400E" />
           </svg>
         )}
       </div>

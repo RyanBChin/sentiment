@@ -210,8 +210,8 @@ export default function SentimentAnalysis() {
                   </div>
 
                   {/* Click indicator */}
-                  <div className="text-center mt-3 pt-2 border-t border-gray-100">
-                    <span className="text-xs text-gray-500">클릭하여 상세보기</span>
+                  <div className="text-center mt-3 pt-2 border-t border-border">
+                    <span className="text-xs text-muted-foreground">클릭하여 상세보기</span>
                   </div>
                 </CardContent>
               </Card>

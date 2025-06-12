@@ -4,17 +4,31 @@ import {
   news, 
   chatMessages, 
   emailAlerts,
+  rawNews,
+  newsAnalysisResults,
+  dailyMarketSummary,
+  priceHistory,
   type Commodity, 
   type CommodityHistory,
   type News, 
   type ChatMessage, 
   type EmailAlert,
+  type RawNews,
+  type NewsAnalysisResults,
+  type DailyMarketSummary,
+  type PriceHistory,
   type InsertCommodity,
   type InsertCommodityHistory,
   type InsertNews,
   type InsertChatMessage,
-  type InsertEmailAlert
+  type InsertEmailAlert,
+  type InsertRawNews,
+  type InsertNewsAnalysisResults,
+  type InsertDailyMarketSummary,
+  type InsertPriceHistory
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {
   // Commodities

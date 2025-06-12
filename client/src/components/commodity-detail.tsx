@@ -46,66 +46,65 @@ export default function CommodityDetail({ commodity, onBack, onNewsSelect }: Com
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Header */}
       <div>
         <Button
           onClick={onBack}
           variant="ghost"
-          className="mb-4 text-blue-600 hover:text-blue-700"
+          className="mb-2 text-blue-600 hover:text-blue-700"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           시황으로 돌아가기
         </Button>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-xl font-bold text-gray-900 mb-1">
           {commodity.name} 상세 정보
         </h2>
-        <p className="text-gray-600">실시간 센티먼트 분석 및 시장 동향</p>
+        <p className="text-sm text-gray-600">실시간 센티먼트 분석 및 시장 동향</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: Textual Insights */}
-        <div className="space-y-6">
+        <div className="space-y-3">
           {/* Latest Sentiment Score */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">최신 센티먼트 점수</CardTitle>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold">최신 센티먼트 점수</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className={`text-4xl font-bold mb-2 ${getSentimentColor(commodity.sentimentScore)}`}>
+            <CardContent className="pt-1">
+              <div className={`text-3xl font-bold mb-1 ${getSentimentColor(commodity.sentimentScore)}`}>
                 {commodity.sentimentScore}
               </div>
-              <p className="text-sm text-gray-600">{getSentimentText(commodity.sentimentScore)}</p>
+              <p className="text-xs text-gray-600">{getSentimentText(commodity.sentimentScore)}</p>
             </CardContent>
           </Card>
 
           {/* Key Summary */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">핵심 요약</CardTitle>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold">핵심 요약</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 pt-1">
               <div>
-                <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                <h4 className="text-sm font-medium text-gray-900 mb-1 flex items-center">
                   📌 주요 현황 이유
                 </h4>
-                <p className="text-gray-700 text-sm leading-relaxed">
+                <p className="text-gray-700 text-xs leading-relaxed">
                   {commodity.name}의 현재 센티먼트 점수는 {commodity.sentimentScore}로, 
                   {commodity.sentimentScore >= 70 ? ' 매우 긍정적인' : 
-                   commodity.sentimentScore >= 50 ? ' 중립적인' : ' 부정적인'} 상황입니다. 
-                  주요 키워드들이 시장 심리에 영향을 미치고 있습니다.
+                   commodity.sentimentScore >= 50 ? ' 중립적인' : ' 부정적인'} 상황입니다.
                 </p>
               </div>
               <div>
-                <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                <h4 className="text-sm font-medium text-gray-900 mb-1 flex items-center">
                   🔑 주요 키워드
                 </h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1">
                   {commodity.keywords.map((keyword, index) => (
                     <Badge
                       key={index}
                       variant="secondary"
-                      className="bg-blue-50 text-blue-700 px-3 py-1"
+                      className="bg-blue-50 text-blue-700 text-xs px-2 py-0"
                     >
                       {keyword}
                     </Badge>
@@ -117,23 +116,23 @@ export default function CommodityDetail({ commodity, onBack, onNewsSelect }: Com
 
           {/* News Table */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">관련 뉴스</CardTitle>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold">관련 뉴스</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-1">
               {isLoading ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton key={i} className="h-16" />
+                    <Skeleton key={i} className="h-12" />
                   ))}
                 </div>
               ) : news && news.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>뉴스 제목</TableHead>
-                      <TableHead>내용 요약</TableHead>
-                      <TableHead className="text-center">점수</TableHead>
+                      <TableHead className="text-xs">뉴스 제목</TableHead>
+                      <TableHead className="text-xs">내용 요약</TableHead>
+                      <TableHead className="text-center text-xs">점수</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -143,17 +142,17 @@ export default function CommodityDetail({ commodity, onBack, onNewsSelect }: Com
                         className="cursor-pointer hover:bg-gray-50"
                         onClick={() => onNewsSelect(article)}
                       >
-                        <TableCell>
-                          <p className="font-medium text-gray-900 line-clamp-2">
+                        <TableCell className="py-2">
+                          <p className="text-xs font-medium text-gray-900 line-clamp-1">
                             {article.title}
                           </p>
                         </TableCell>
-                        <TableCell>
-                          <p className="text-gray-600 line-clamp-2 text-sm">
+                        <TableCell className="py-2">
+                          <p className="text-gray-600 line-clamp-1 text-xs">
                             {article.snippet}
                           </p>
                         </TableCell>
-                        <TableCell className="text-center">
+                        <TableCell className="text-center py-2">
                           <Badge
                             className={`text-xs font-medium ${getSentimentBgColor(article.sentimentScore)}`}
                           >
@@ -165,27 +164,27 @@ export default function CommodityDetail({ commodity, onBack, onNewsSelect }: Com
                   </TableBody>
                 </Table>
               ) : (
-                <p className="text-gray-500 text-center py-4">관련 뉴스가 없습니다.</p>
+                <p className="text-gray-500 text-center py-2 text-xs">관련 뉴스가 없습니다.</p>
               )}
             </CardContent>
           </Card>
         </div>
 
         {/* Right: Charts */}
-        <div className="space-y-6">
+        <div className="space-y-3">
           {/* Price Trend Chart */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center">
-                <TrendingUp className="w-5 h-5 mr-2" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold flex items-center">
+                <TrendingUp className="w-4 h-4 mr-2" />
                 가격 흐름 (2주)
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <CardContent className="pt-1">
+              <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
                 <div className="text-center text-gray-500">
-                  <BarChart3 className="w-12 h-12 mx-auto mb-2" />
-                  <p className="text-sm">가격 추세 차트</p>
+                  <BarChart3 className="w-8 h-8 mx-auto mb-1" />
+                  <p className="text-xs">가격 추세 차트</p>
                   <p className="text-xs">차트 구현 예정</p>
                 </div>
               </div>
@@ -194,17 +193,17 @@ export default function CommodityDetail({ commodity, onBack, onNewsSelect }: Com
 
           {/* Sentiment Score Trend Chart */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center">
-                <BarChart3 className="w-5 h-5 mr-2" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold flex items-center">
+                <BarChart3 className="w-4 h-4 mr-2" />
                 점수 흐름 (2주)
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <CardContent className="pt-1">
+              <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
                 <div className="text-center text-gray-500">
-                  <TrendingUp className="w-12 h-12 mx-auto mb-2" />
-                  <p className="text-sm">센티먼트 점수 차트</p>
+                  <TrendingUp className="w-8 h-8 mx-auto mb-1" />
+                  <p className="text-xs">센티먼트 점수 차트</p>
                   <p className="text-xs">차트 구현 예정</p>
                 </div>
               </div>

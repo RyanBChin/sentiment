@@ -68,24 +68,24 @@ export default function Chatbot() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-4">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-xl font-bold text-gray-900 mb-1">
           AI 시장 분석 챗봇
         </h2>
-        <p className="text-gray-600">시장 상황에 대해 궁금한 점을 물어보세요</p>
+        <p className="text-sm text-gray-600">시장 상황에 대해 궁금한 점을 물어보세요</p>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Bot className="w-5 h-5 mr-2" />
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center text-lg">
+            <Bot className="w-4 h-4 mr-2" />
             채팅
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           {/* Chat Messages Area */}
-          <div className="h-96 overflow-y-auto p-4 bg-gray-50 rounded-lg space-y-4">
+          <div className="h-80 overflow-y-auto p-3 bg-gray-50 rounded-lg space-y-3">
             {messages.map((message) => (
               <div key={message.id} className="flex items-start space-x-3">
                 {message.type === 'bot' ? (

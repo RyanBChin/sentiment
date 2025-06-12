@@ -35,13 +35,13 @@ export default function NewsDetail({ news, onBack }: NewsDetailProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Header */}
       <div>
         <Button
           onClick={onBack}
           variant="ghost"
-          className="mb-4 text-blue-600 hover:text-blue-700"
+          className="mb-2 text-blue-600 hover:text-blue-700"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           상세 페이지로 돌아가기
@@ -49,21 +49,21 @@ export default function NewsDetail({ news, onBack }: NewsDetailProps) {
       </div>
 
       {/* News Article */}
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Card>
-          <CardContent className="p-8">
-            <header className="mb-6 pb-6 border-b border-gray-200">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <CardContent className="p-4">
+            <header className="mb-4 pb-3 border-b border-gray-200">
+              <h1 className="text-xl font-bold text-gray-900 mb-3">
                 {news.title}
               </h1>
               
-              <div className="flex items-center space-x-6 text-sm text-gray-600 mb-4">
+              <div className="flex items-center space-x-4 text-xs text-gray-600 mb-3">
                 <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <Calendar className="w-3 h-3 mr-1" />
                   <span>{formatDate(news.publishedAt)}</span>
                 </div>
                 <div className="flex items-center">
-                  <span className="mr-2">📈 뉴스 점수:</span>
+                  <span className="mr-1">📈 뉴스 점수:</span>
                   <Badge
                     className={`text-xs font-medium ${getSentimentBgColor(news.sentimentScore)}`}
                   >
@@ -73,13 +73,13 @@ export default function NewsDetail({ news, onBack }: NewsDetailProps) {
               </div>
 
               <div>
-                <h4 className="font-medium text-gray-900 mb-2">🔑 주요 키워드</h4>
-                <div className="flex flex-wrap gap-2">
+                <h4 className="text-sm font-medium text-gray-900 mb-2">🔑 주요 키워드</h4>
+                <div className="flex flex-wrap gap-1">
                   {news.keywords.map((keyword, index) => (
                     <Badge
                       key={index}
                       variant="secondary"
-                      className="bg-blue-50 text-blue-700 px-3 py-1"
+                      className="bg-blue-50 text-blue-700 text-xs px-2 py-1"
                     >
                       {keyword}
                     </Badge>
@@ -88,9 +88,9 @@ export default function NewsDetail({ news, onBack }: NewsDetailProps) {
               </div>
             </header>
 
-            <div className="prose max-w-none">
+            <div className="max-h-96 overflow-y-auto">
               {news.content.split('\n\n').map((paragraph, index) => (
-                <p key={index} className="text-gray-700 leading-relaxed mb-4">
+                <p key={index} className="text-gray-700 leading-relaxed mb-3 text-sm">
                   {paragraph}
                 </p>
               ))}

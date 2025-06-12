@@ -62,38 +62,38 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Summary Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-semibold flex items-center">
-              <TrendingUp className="w-5 h-5 mr-2" />
+            <CardTitle className="text-base font-semibold flex items-center">
+              <TrendingUp className="w-4 h-4 mr-2" />
               📊 평균 점수
             </CardTitle>
             <Badge variant="secondary" className="text-xs">실시간</Badge>
           </CardHeader>
-          <CardContent>
-            <div className={`text-3xl font-bold mb-2 ${getSentimentColor(averageScore)}`}>
+          <CardContent className="pt-2">
+            <div className={`text-2xl font-bold mb-1 ${getSentimentColor(averageScore)}`}>
               {averageScore.toFixed(1)}
             </div>
-            <p className="text-sm text-gray-600">전체 상품 평균 센티먼트</p>
+            <p className="text-xs text-gray-600">전체 상품 평균 센티먼트</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-semibold flex items-center">
-              <Trophy className="w-5 h-5 mr-2" />
+            <CardTitle className="text-base font-semibold flex items-center">
+              <Trophy className="w-4 h-4 mr-2" />
               🏆 최고 점수 품목
             </CardTitle>
             <Badge variant="secondary" className="text-xs">TOP 1</Badge>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900 mb-1">
+          <CardContent className="pt-2">
+            <div className="text-lg font-bold text-gray-900 mb-1">
               {topCommodity.name}
             </div>
-            <div className={`text-xl font-semibold ${getSentimentColor(topCommodity.sentimentScore)}`}>
+            <div className={`text-lg font-semibold ${getSentimentColor(topCommodity.sentimentScore)}`}>
               {topCommodity.sentimentScore}
             </div>
           </CardContent>
@@ -102,45 +102,45 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
 
       {/* Live Sentiment Cards */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">실시간 시황 점수</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-3">실시간 시황 점수</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-3">
           {commodities.map((commodity) => (
             <Card
               key={commodity.id}
               className="cursor-pointer hover:shadow-md transition-shadow duration-200"
               onClick={() => onCommoditySelect(commodity)}
             >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="text-lg font-semibold">
-                  {commodity.name} ({commodity.englishName})
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-semibold">
+                  {commodity.name}
                 </CardTitle>
                 <Badge
-                  className={`${getSentimentBgColor(commodity.sentimentScore)} text-white px-3 py-1 text-sm font-medium`}
+                  className={`${getSentimentBgColor(commodity.sentimentScore)} text-white px-2 py-1 text-xs font-medium`}
                 >
                   {commodity.sentimentScore}
                 </Badge>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-2 pt-1">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">종가</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-xs text-gray-600">종가</span>
+                  <span className="text-xs font-semibold text-gray-900">
                     ${commodity.price.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">변동</span>
-                  <span className={`font-semibold ${getChangeColor(commodity.priceChange)}`}>
+                  <span className="text-xs text-gray-600">변동</span>
+                  <span className={`text-xs font-semibold ${getChangeColor(commodity.priceChange)}`}>
                     {getChangeSymbol(commodity.priceChange)}{Math.abs(commodity.priceChange)}%
                   </span>
                 </div>
-                <div className="pt-2 border-t border-gray-100">
-                  <p className="text-sm text-gray-600 mb-2">주요 키워드</p>
-                  <div className="flex flex-wrap gap-2">
+                <div className="pt-1 border-t border-gray-100">
+                  <p className="text-xs text-gray-600 mb-1">주요 키워드</p>
+                  <div className="flex flex-wrap gap-1">
                     {commodity.keywords.slice(0, 2).map((keyword, index) => (
                       <Badge
                         key={index}
                         variant="secondary"
-                        className="bg-blue-50 text-blue-700 text-xs"
+                        className="bg-blue-50 text-blue-700 text-xs px-1 py-0"
                       >
                         {keyword}
                       </Badge>

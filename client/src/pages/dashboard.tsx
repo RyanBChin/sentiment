@@ -135,7 +135,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 max-w-7xl">
+      <main className="container mx-auto px-4 py-2 max-w-7xl">
         {renderActiveSection()}
       </main>
     </div>

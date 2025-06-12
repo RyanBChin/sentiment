@@ -95,13 +95,13 @@ export default function EmailAlerts() {
   const watchedFrequency = watch("frequency");
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-4">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">알림 설정</h2>
-        <p className="text-gray-600">관심 있는 상품의 시장 동향을 이메일로 받아보세요</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">알림 설정</h2>
+        <p className="text-sm text-gray-600">관심 있는 상품의 시장 동향을 이메일로 받아보세요</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Settings Form */}
         <Card>
           <CardHeader>
@@ -111,13 +111,13 @@ export default function EmailAlerts() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Commodity Selection */}
               <div>
-                <Label className="text-sm font-semibold text-gray-900 mb-3 block">
+                <Label className="text-sm font-semibold text-gray-900 mb-2 block">
                   관심 상품 선택
                 </Label>
-                <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2">
                   {commodityOptions.map((option) => (
                     <div key={option.value} className="flex items-center space-x-2">
                       <Checkbox
@@ -127,40 +127,42 @@ export default function EmailAlerts() {
                           handleCommodityChange(option.value, checked as boolean)
                         }
                       />
-                      <Label htmlFor={option.value} className="text-gray-700">
+                      <Label htmlFor={option.value} className="text-sm text-gray-700">
                         {option.label}
                       </Label>
                     </div>
                   ))}
                 </div>
                 {errors.commodities && (
-                  <p className="text-sm text-red-600 mt-1">{errors.commodities.message}</p>
+                  <p className="text-xs text-red-600 mt-1">{errors.commodities.message}</p>
                 )}
               </div>
 
               {/* Alert Frequency */}
               <div>
-                <Label className="text-sm font-semibold text-gray-900 mb-3 block">
+                <Label className="text-sm font-semibold text-gray-900 mb-2 block">
                   알림 주기
                 </Label>
                 <RadioGroup
                   value={watchedFrequency}
-                  onValueChange={(value) => setValue("frequency", value as "hourly" | "daily" | "weekly")}
+                  onValueChange={(value) => setValue("frequency", value as "hourly" | "daily" | "weekly" | "on_update")}
                 >
-                  {frequencyOptions.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option.value} id={option.value} />
-                      <Label htmlFor={option.value} className="text-gray-700">
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-2 gap-2">
+                    {frequencyOptions.map((option) => (
+                      <div key={option.value} className="flex items-center space-x-2">
+                        <RadioGroupItem value={option.value} id={option.value} />
+                        <Label htmlFor={option.value} className="text-sm text-gray-700">
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </RadioGroup>
               </div>
 
               {/* Email Address */}
               <div>
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 mb-2 block">
+                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 mb-1 block">
                   이메일 주소
                 </Label>
                 <Input
@@ -170,7 +172,7 @@ export default function EmailAlerts() {
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+                  <p className="text-xs text-red-600 mt-1">{errors.email.message}</p>
                 )}
               </div>
 

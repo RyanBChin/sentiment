@@ -116,34 +116,34 @@ export default function SentimentAnalysis() {
   ];
 
   const getScoreColor = (score: number) => {
-    if (score >= 85) return "text-green-600";
-    if (score >= 70) return "text-blue-600";
-    if (score >= 60) return "text-yellow-600";
-    return "text-red-600";
+    if (score >= 85) return "text-sentiment-positive";
+    if (score >= 70) return "text-blue-400";
+    if (score >= 60) return "text-yellow-400";
+    return "text-sentiment-negative";
   };
 
   const getScoreBgColor = (score: number) => {
-    if (score >= 85) return "bg-green-100 text-green-800";
-    if (score >= 70) return "bg-blue-100 text-blue-800";
-    if (score >= 60) return "bg-yellow-100 text-yellow-800";
-    return "bg-red-100 text-red-800";
+    if (score >= 85) return "bg-sentiment-positive text-white";
+    if (score >= 70) return "bg-blue-600 text-white";
+    if (score >= 60) return "bg-yellow-600 text-white";
+    return "bg-sentiment-negative text-white";
   };
 
   const getEvaluationColor = (evaluation: string) => {
     switch (evaluation) {
-      case "매우 높음": return "bg-green-100 text-green-800";
-      case "높음": return "bg-blue-100 text-blue-800";
-      case "보통": return "bg-yellow-100 text-yellow-800";
-      default: return "bg-red-100 text-red-800";
+      case "매우 높음": return "bg-sentiment-positive text-white";
+      case "높음": return "bg-blue-600 text-white";
+      case "보통": return "bg-yellow-600 text-white";
+      default: return "bg-sentiment-negative text-white";
     }
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden max-w-[1920px] max-h-[1080px] mx-auto p-6">
+    <div className="w-full max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Sentiment-Price Fit Score 분석</h1>
-        <p className="text-gray-600 text-sm">품목별 센티먼트 점수와 실제 가격 변동의 일치율을 분석합니다</p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-foreground mb-2">Sentiment-Price Fit Score 분석</h1>
+        <p className="text-muted-foreground">품목별 센티먼트 점수와 실제 가격 변동의 일치율을 분석합니다</p>
       </div>
 
       {/* Score Cards Grid */}
@@ -152,18 +152,18 @@ export default function SentimentAnalysis() {
           <Dialog key={commodity.id}>
             <DialogTrigger asChild>
               <Card 
-                className="h-[280px] cursor-pointer hover:shadow-xl hover:border-blue-300 hover:scale-[1.02] transition-all duration-200 bg-white rounded-lg shadow p-5"
+                className="h-[280px] cursor-pointer hover:shadow-xl hover:border-primary/50 hover:scale-[1.02] transition-all duration-200 bg-card border-border rounded-xl shadow-lg p-5"
                 onClick={() => setSelectedCommodity(commodity)}
               >
                 <CardHeader className="pb-2 p-0">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold">
+                    <CardTitle className="text-lg font-semibold text-foreground">
                       {commodity.name}
                     </CardTitle>
                     <div className="flex items-center">
-                      {commodity.recentTrend === 'up' && <TrendingUp className="w-5 h-5 text-green-600" />}
-                      {commodity.recentTrend === 'down' && <TrendingDown className="w-5 h-5 text-red-600" />}
-                      {commodity.recentTrend === 'stable' && <BarChart3 className="w-5 h-5 text-gray-600" />}
+                      {commodity.recentTrend === 'up' && <TrendingUp className="w-5 h-5 text-sentiment-positive" />}
+                      {commodity.recentTrend === 'down' && <TrendingDown className="w-5 h-5 text-sentiment-negative" />}
+                      {commodity.recentTrend === 'stable' && <BarChart3 className="w-5 h-5 text-muted-foreground" />}
                     </div>
                   </div>
                 </CardHeader>
@@ -182,7 +182,7 @@ export default function SentimentAnalysis() {
                     {/* Progress Bar */}
                     <div className="mb-3">
                       <Progress value={commodity.fitScore} className="h-2" />
-                      <div className="flex justify-between text-xs text-gray-600 mt-1">
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
                         <span>0점</span>
                         <span>100점</span>
                       </div>
@@ -191,16 +191,16 @@ export default function SentimentAnalysis() {
                     {/* Match Statistics */}
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">2주간 일치율</span>
-                        <span className="font-semibold text-sm">
+                        <span className="text-sm text-muted-foreground">2주간 일치율</span>
+                        <span className="font-semibold text-sm text-foreground">
                           {commodity.matchDays}/{commodity.totalDays}일
                         </span>
                       </div>
                       
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">상관계수</span>
+                        <span className="text-sm text-muted-foreground">상관계수</span>
                         <div className="flex items-center space-x-1">
-                          <span className="font-semibold text-sm">{commodity.correlation}</span>
+                          <span className="font-semibold text-sm text-foreground">{commodity.correlation}</span>
                           <Badge variant="secondary" className={`${getEvaluationColor(commodity.evaluation)} text-xs`}>
                             {commodity.evaluation}
                           </Badge>

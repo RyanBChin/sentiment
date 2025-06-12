@@ -42,55 +42,51 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
   }
 
   const getCommodityIcon = (name: string) => {
+    const getIconStyle = (name: string) => {
+      switch (name) {
+        case 'WTI유':
+          return 'bg-black text-white';
+        case '옥수수':
+          return 'bg-yellow-400 text-yellow-800';
+        case '금':
+          return 'bg-yellow-500 text-yellow-900';
+        case '구리':
+          return 'bg-orange-500 text-orange-900';
+        case '밀':
+          return 'bg-orange-400 text-orange-800';
+        default:
+          return 'bg-gray-400 text-gray-800';
+      }
+    };
+
     return (
-      <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-slate-600 to-slate-700 shadow-lg">
+      <div className={`w-12 h-12 flex items-center justify-center rounded-full ${getIconStyle(name)}`}>
         {name === '옥수수' && (
-          <svg viewBox="0 0 64 64" className="w-12 h-12">
-            <ellipse cx="32" cy="32" rx="8" ry="20" fill="#FCD34D" />
-            <ellipse cx="32" cy="32" rx="6" ry="18" fill="#F59E0B" />
-            {/* Corn kernels */}
-            {Array.from({length: 12}).map((_, i) => (
-              <circle key={i} cx={28 + (i % 3) * 2} cy={18 + Math.floor(i / 3) * 3} r="1.5" fill="#FEF3C7" />
-            ))}
-            {Array.from({length: 12}).map((_, i) => (
-              <circle key={i+12} cx={30 + (i % 3) * 2} cy={20 + Math.floor(i / 3) * 3} r="1.5" fill="#FDE68A" />
-            ))}
+          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+            <path d="M12 2C10.5 2 9.2 2.8 8.5 4C7.8 2.8 6.5 2 5 2C3.3 2 2 3.3 2 5V19C2 20.7 3.3 22 5 22C6.5 22 7.8 21.2 8.5 20C9.2 21.2 10.5 22 12 22C13.5 22 14.8 21.2 15.5 20C16.2 21.2 17.5 22 19 22C20.7 22 22 20.7 22 19V5C22 3.3 20.7 2 19 2C17.5 2 16.2 2.8 15.5 4C14.8 2.8 13.5 2 12 2Z"/>
           </svg>
         )}
         {name === '밀' && (
-          <svg viewBox="0 0 64 64" className="w-12 h-12">
-            <path d="M32 12 L30 16 L28 12 L26 16 L24 12 L22 16 L20 12 L18 16 L16 12 L32 48 L48 12 L46 16 L44 12 L42 16 L40 12 L38 16 L36 12 L34 16 Z" fill="#D97706" />
-            <path d="M32 12 L30 16 L28 12 L26 16 L24 12 L22 16 L20 12 L32 40 L44 12 L42 16 L40 12 L38 16 L36 12 L34 16 Z" fill="#F59E0B" />
-            <rect x="31" y="40" width="2" height="12" fill="#92400E" />
+          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+            <path d="M12 2L10 6L8 2L6 6L4 2L2 6V20H4L6 16L8 20H10L12 16L14 20H16L18 16L20 20H22V6L20 2L18 6L16 2L14 6Z"/>
           </svg>
         )}
         {name === '구리' && (
-          <svg viewBox="0 0 64 64" className="w-12 h-12">
-            <circle cx="32" cy="32" r="18" fill="#EA580C" />
-            <circle cx="32" cy="32" r="14" fill="#FB923C" />
-            <circle cx="32" cy="32" r="10" fill="#FDBA74" />
-            <circle cx="32" cy="32" r="6" fill="#EA580C" />
-            <path d="M24 24 L40 40 M40 24 L24 40" stroke="#7C2D12" strokeWidth="2" />
+          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 8l8 8m0-8l-8 8" stroke="white" strokeWidth="2"/>
           </svg>
         )}
         {name === 'WTI유' && (
-          <svg viewBox="0 0 64 64" className="w-12 h-12">
-            <ellipse cx="32" cy="38" rx="14" ry="18" fill="#374151" />
-            <ellipse cx="32" cy="36" rx="12" ry="16" fill="#4B5563" />
-            <ellipse cx="32" cy="34" rx="10" ry="14" fill="#6B7280" />
-            <rect x="28" y="20" width="8" height="8" rx="1" fill="#374151" />
-            <rect x="30" y="18" width="4" height="4" rx="1" fill="#1F2937" />
-            <circle cx="32" cy="30" r="2" fill="#111827" />
-            <text x="32" y="42" textAnchor="middle" className="text-white text-xs font-bold" fill="white">OIL</text>
+          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+            <path d="M12 2C8.5 2 6 4.8 6 8.5C6 12.3 12 20.2 12 20.2S18 12.3 18 8.5C18 4.8 15.5 2 12 2ZM12 11C10.3 11 9 9.7 9 8S10.3 5 12 5S15 6.3 15 8S13.7 11 12 11Z"/>
           </svg>
         )}
         {name === '금' && (
-          <svg viewBox="0 0 64 64" className="w-12 h-12">
-            <rect x="20" y="28" width="24" height="12" rx="2" fill="#F59E0B" />
-            <rect x="22" y="30" width="20" height="8" rx="1" fill="#FBBF24" />
-            <rect x="24" y="32" width="16" height="4" rx="1" fill="#FCD34D" />
-            <rect x="28" y="24" width="8" height="4" rx="1" fill="#F59E0B" />
-            <circle cx="32" cy="26" r="1" fill="#92400E" />
+          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+            <rect x="4" y="8" width="16" height="8" rx="1"/>
+            <rect x="6" y="10" width="12" height="4" rx="0.5"/>
+            <rect x="8" y="6" width="8" height="2" rx="1"/>
           </svg>
         )}
       </div>

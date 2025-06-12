@@ -228,11 +228,11 @@ export default function SentimentAnalysis() {
                     {commodity.details.weeklyScores.map((score, index) => (
                       <div key={index} className="flex flex-col items-center flex-1">
                         <div 
-                          className="bg-blue-500 rounded-t w-full"
+                          className="bg-primary rounded-t w-full"
                           style={{ height: `${(score / 100) * 80}%` }}
                         />
                         <span className="text-xs mt-1">Week {index + 1}</span>
-                        <span className="text-xs text-gray-600">{score}점</span>
+                        <span className="text-xs text-muted-foreground">{score}점</span>
                       </div>
                     ))}
                   </div>

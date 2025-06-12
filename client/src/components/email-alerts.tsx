@@ -95,18 +95,18 @@ export default function EmailAlerts() {
   const watchedFrequency = watch("frequency");
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-4">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-foreground mb-2">알림 설정</h2>
-        <p className="text-muted-foreground">관심 있는 상품의 시장 동향을 이메일로 받아보세요</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">알림 설정</h2>
+        <p className="text-sm text-gray-600">관심 있는 상품의 시장 동향을 이메일로 받아보세요</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Settings Form */}
-        <Card className="bg-card border-border">
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center text-foreground">
-              <Bell className="w-5 h-5 mr-2 text-primary" />
+            <CardTitle className="flex items-center">
+              <Bell className="w-5 h-5 mr-2" />
               알림 설정
             </CardTitle>
           </CardHeader>
@@ -114,7 +114,7 @@ export default function EmailAlerts() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Commodity Selection */}
               <div>
-                <Label className="text-sm font-semibold text-foreground mb-2 block">
+                <Label className="text-sm font-semibold text-gray-900 mb-2 block">
                   관심 상품 선택
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
@@ -127,7 +127,7 @@ export default function EmailAlerts() {
                           handleCommodityChange(option.value, checked as boolean)
                         }
                       />
-                      <Label htmlFor={option.value} className="text-sm text-foreground">
+                      <Label htmlFor={option.value} className="text-sm text-gray-700">
                         {option.label}
                       </Label>
                     </div>
@@ -140,7 +140,7 @@ export default function EmailAlerts() {
 
               {/* Alert Frequency */}
               <div>
-                <Label className="text-sm font-semibold text-foreground mb-2 block">
+                <Label className="text-sm font-semibold text-gray-900 mb-2 block">
                   알림 주기
                 </Label>
                 <RadioGroup
@@ -151,7 +151,7 @@ export default function EmailAlerts() {
                     {frequencyOptions.map((option) => (
                       <div key={option.value} className="flex items-center space-x-2">
                         <RadioGroupItem value={option.value} id={option.value} />
-                        <Label htmlFor={option.value} className="text-sm text-foreground">
+                        <Label htmlFor={option.value} className="text-sm text-gray-700">
                           {option.label}
                         </Label>
                       </div>
@@ -162,7 +162,7 @@ export default function EmailAlerts() {
 
               {/* Email Address */}
               <div>
-                <Label htmlFor="email" className="text-sm font-semibold text-foreground mb-1 block">
+                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 mb-1 block">
                   이메일 주소
                 </Label>
                 <Input

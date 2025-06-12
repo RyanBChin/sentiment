@@ -109,22 +109,22 @@ export default function Chatbot() {
   ];
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6">
-      {/* Two Column Layout */}
-      <div className="grid grid-cols-3 gap-6">
+    <div className="w-screen h-screen overflow-hidden max-w-[1920px] max-h-[1080px] mx-auto">
+      {/* Two Column Layout - No Scroll */}
+      <div className="grid grid-cols-3 gap-6 h-full p-6">
         
         {/* Left Column - Chat Area (2/3 width) */}
-        <div className="col-span-2 flex flex-col space-y-4">
+        <div className="col-span-2 flex flex-col">
           
           {/* Chat Header */}
-          <Card className="bg-card border-border rounded-xl shadow-lg p-4">
+          <Card className="mb-4 flex-shrink-0 bg-white rounded-lg shadow p-4">
             <CardHeader className="pb-0 p-0">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Bot className="w-5 h-5 mr-2 text-primary" />
+                  <Bot className="w-5 h-5 mr-2 text-blue-600" />
                   <div>
-                    <h1 className="text-lg font-bold text-foreground">AI 시장 분석 챗봇</h1>
-                    <p className="text-xs text-muted-foreground font-normal">실시간 시장 데이터와 전문가 분석을 기반으로 답변드립니다</p>
+                    <h1 className="text-lg font-bold text-gray-900">AI 시장 분석 챗봇</h1>
+                    <p className="text-xs text-gray-600 font-normal">실시간 시장 데이터와 전문가 분석을 기반으로 답변드립니다</p>
                   </div>
                 </div>
                 <div className="flex space-x-2">
@@ -137,11 +137,11 @@ export default function Chatbot() {
           </Card>
 
           {/* Chat Container - Fixed Height */}
-          <Card className="flex-1 flex flex-col min-h-0 bg-card border-border rounded-xl shadow-lg h-[600px]">
+          <Card className="flex-1 flex flex-col min-h-0 bg-white rounded-lg shadow h-[780px]">
             <CardContent className="p-4 flex flex-col h-full">
               
               {/* Chat Messages - Fixed Height with Scroll */}
-              <div className="flex-1 overflow-y-auto mb-3 p-3 bg-secondary rounded-lg space-y-3">
+              <div className="flex-1 overflow-y-auto mb-3 p-3 bg-gray-50 rounded-lg space-y-3 h-[600px]">
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -150,12 +150,12 @@ export default function Chatbot() {
                     <div
                       className={`max-w-md px-4 py-3 rounded-lg ${
                         message.type === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-card text-foreground shadow-sm border border-border'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-white text-gray-900 shadow-sm border'
                       }`}
                     >
                       <div className="flex items-start space-x-2">
-                        {message.type === 'bot' && <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />}
+                        {message.type === 'bot' && <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-blue-600" />}
                         {message.type === 'user' && <User className="w-4 h-4 mt-1 flex-shrink-0" />}
                         <div className="flex-1">
                           <div 
@@ -189,10 +189,10 @@ export default function Chatbot() {
                 ))}
                 {chatMutation.isPending && (
                   <div className="flex justify-start">
-                    <div className="bg-card text-foreground px-4 py-3 rounded-lg shadow-sm border border-border">
+                    <div className="bg-white text-gray-900 px-4 py-3 rounded-lg shadow-sm border">
                       <div className="flex items-center space-x-2">
-                        <Bot className="w-4 h-4 text-primary" />
-                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                        <Bot className="w-4 h-4 text-blue-600" />
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                         <span className="text-sm">분석 중...</span>
                       </div>
                     </div>
@@ -205,14 +205,14 @@ export default function Chatbot() {
               {/* Suggested Questions - Limited to 2 lines */}
               {messages.length === 0 && (
                 <div className="mb-3 flex-shrink-0">
-                  <h4 className="text-xs font-medium text-muted-foreground mb-2">추천 질문</h4>
+                  <h4 className="text-xs font-medium text-gray-700 mb-2">추천 질문</h4>
                   <div className="flex flex-wrap gap-1 max-h-[60px] overflow-hidden">
                     {suggestedQuestions.slice(0, 4).map((question, index) => (
                       <Button
                         key={index}
                         variant="outline"
                         size="sm"
-                        className="text-xs hover:bg-secondary hover:border-primary transition-colors flex-shrink-0 h-7"
+                        className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors flex-shrink-0 h-7"
                         onClick={() => {
                           setInputValue(question);
                           handleSubmit(question);

@@ -412,76 +412,6 @@ export class MemStorage implements IStorage {
     
     return biggestChange;
   }
-
-  // Additional methods to satisfy IStorage interface
-  async createRawNews(rawNews: InsertRawNews): Promise<RawNews> {
-    const id = Math.max(...Array.from(this.news.keys())) + 1;
-    const rawNewsItem: RawNews = {
-      ...rawNews,
-      id,
-      createdAt: new Date(),
-      analysisStatus: false
-    };
-    return rawNewsItem;
-  }
-
-  async getRawNews(id: number): Promise<RawNews | undefined> {
-    return undefined;
-  }
-
-  async getRawNewsByStatus(analysisStatus: boolean): Promise<RawNews[]> {
-    return [];
-  }
-
-  async updateRawNewsStatus(id: number, analysisStatus: boolean): Promise<void> {
-    return;
-  }
-
-  async createNewsAnalysisResult(analysis: InsertNewsAnalysisResults): Promise<NewsAnalysisResults> {
-    const id = Math.max(...Array.from(this.news.keys())) + 1;
-    const result: NewsAnalysisResults = {
-      ...analysis,
-      id,
-      createdAt: new Date()
-    };
-    return result;
-  }
-
-  async getNewsAnalysisResults(rawNewsId: number): Promise<NewsAnalysisResults[]> {
-    return [];
-  }
-
-  async createDailyMarketSummary(summary: InsertDailyMarketSummary): Promise<DailyMarketSummary> {
-    const id = Math.max(...Array.from(this.news.keys())) + 1;
-    const summaryItem: DailyMarketSummary = {
-      ...summary,
-      id,
-      createdAt: new Date()
-    };
-    return summaryItem;
-  }
-
-  async getDailyMarketSummary(date: string, commodity: string): Promise<DailyMarketSummary | undefined> {
-    return undefined;
-  }
-
-  async getDailyMarketSummaries(commodity?: string): Promise<DailyMarketSummary[]> {
-    return [];
-  }
-
-  async createPriceHistory(priceData: InsertPriceHistory): Promise<PriceHistory> {
-    const id = Math.max(...Array.from(this.news.keys())) + 1;
-    const priceItem: PriceHistory = {
-      ...priceData,
-      id,
-      createdAt: new Date()
-    };
-    return priceItem;
-  }
-
-  async getPriceHistory(commodity: string, startDate?: string, endDate?: string): Promise<PriceHistory[]> {
-    return [];
-  }
 }
 
 // Database Storage Implementation
@@ -731,4 +661,4 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

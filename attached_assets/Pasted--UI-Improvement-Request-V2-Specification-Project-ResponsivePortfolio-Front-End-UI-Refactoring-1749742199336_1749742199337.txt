@@ -1,0 +1,127 @@
+📄 UI Improvement Request — V2 Specification
+Project: ResponsivePortfolio — Front-End UI Refactoring
+Recipient: Zapier / Front-End Development Team
+Objective: Upgrade UI consistency, design system adoption, and SaaS-level polish
+1️⃣ 🔧 Core Goal
+Migrate the current UI from ad-hoc Tailwind usage to a fully consistent design system based on:
+
+Tailwind CSS extended configuration
+
+Unified color palette
+
+Shared component libraries (shadcn/ui)
+
+Clean typography and spacing hierarchy
+
+Modern interaction design
+
+Easier scalability and future-proof maintainability
+
+2️⃣ 🔎 Primary Issues Identified
+Area	Current Status	Recommended Improvement
+Global Design System	No centralized Tailwind config	Introduce consistent tailwind.config.js with global colors, font sizes, spacing
+Color Consistency	Frequent inline color codes (text-red-500, etc.)	Standardize via color tokens (e.g. primary, sentiment.positive)
+Card Layout	Multiple ad-hoc card implementations	Consolidate into a single unified Card component
+Buttons	Buttons styled per usage	Build reusable PrimaryButton, SecondaryButton, DangerButton components
+Micro-Interaction	Lacks hover, active, transitions	Add hover:scale-105, transition-all, active:scale-95
+Layout Grids	Static grid layouts (grid-cols-1)	Use flexible layouts (auto-fit, flexbox) for responsiveness
+Charts	Using default Recharts config	Customize colors, gridlines, tooltips for modern feel
+Loading States	Partial Skeleton usage	Apply Skeleton consistently for all loading states
+Typography	Inconsistent font sizes (text-lg, text-base)	Define global text hierarchy: h1 ~ h3, p, small
+Dark Mode	Not supported	(Optional) Prepare for Tailwind dark mode switch
+
+3️⃣ 🖌 Unified Tailwind Config Example
+javascript
+복사
+편집
+// tailwind.config.js
+
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#246BFD',
+        secondary: '#22C55E',
+        danger: '#EF4444',
+        warning: '#FACC15',
+        neutral: {
+          light: '#F8F9FA',
+          DEFAULT: '#E5E7EB',
+          dark: '#1F2937',
+        },
+        sentiment: {
+          positive: '#3B82F6',
+          neutral: '#9CA3AF',
+          negative: '#EF4444',
+        },
+        card: '#FFFFFF',
+        background: '#F9FAFB',
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
+    },
+  },
+}
+4️⃣ 🧩 Reusable Components To Build
+✅ Card Component
+html
+복사
+편집
+<div class="bg-card rounded-2xl shadow-sm p-6 transition hover:shadow-lg">
+  <h2 class="text-xl font-semibold mb-3">Sentiment Score</h2>
+  <div class="flex items-center">
+    <div class="text-4xl font-bold text-primary">82</div>
+    <div class="ml-2 text-lg text-sentiment-positive">▲ 1.5%</div>
+  </div>
+</div>
+✅ Button Components
+PrimaryButton
+
+SecondaryButton
+
+DangerButton
+
+Use consistent padding, radius, shadows and transitions for all button variations.
+
+5️⃣ 🖥 Global Layout Refinement
+Header: Fixed height, shadow, left logo, right user menu.
+
+Sidebar: Fixed width (240px), pinned left, icons + text.
+
+Main Content: 24px padding, consistent section spacing.
+
+6️⃣ 🚀 Expected Results
+3x more scalable UI system
+
+Unified visual identity
+
+SaaS-grade dashboard design standard
+
+Easier onboarding for future developers
+
+7️⃣ ✅ Summary Request To Zapier Team
+Please proceed with the following:
+
+Refactor UI components according to the unified design system above.
+
+Migrate inline Tailwind classes into reusable component-level abstraction.
+
+Apply Tailwind config extension to enforce consistent color, spacing, typography.
+
+Upgrade all interactive components with modern transitions and hover effects.
+
+Apply uniform card/grid layout logic across all pages.
+
+⚠ No change required on backend logic or API structure.
+
+8️⃣ ⚡ (Optional): Starter Template
+I can additionally provide a "Starter Template Repo" fully pre-configured for this design system.
+
+Fully integrated Tailwind config
+
+Ready-to-use component scaffolding
+
+Accelerated development productivity
+
+👉 If you approve: “Generate starter repo”

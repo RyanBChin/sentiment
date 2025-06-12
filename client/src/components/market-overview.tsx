@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SaasCard, SaasCardHeader, SaasCardTitle, SaasCardContent } from "@/components/ui/saas-card";
+import { SaasButton } from "@/components/ui/saas-button";
+import { SaasPageHeader, SaasGrid } from "@/components/ui/saas-layout";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, AlertTriangle, TrendingDown, AlertCircle } from "lucide-react";
@@ -20,15 +22,21 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
 
   if (isLoading || alertLoading) {
     return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 mb-4">
-          <Skeleton className="h-32" />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-3">
+      <div className="space-y-8">
+        <SaasCard>
+          <Skeleton className="h-8 w-3/4 mb-4" />
+          <Skeleton className="h-6 w-1/2" />
+        </SaasCard>
+        <SaasGrid cols={5}>
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-64" />
+            <SaasCard key={i}>
+              <Skeleton className="h-6 w-3/4 mb-4" />
+              <Skeleton className="h-16 w-full mb-3" />
+              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="h-4 w-2/3" />
+            </SaasCard>
           ))}
-        </div>
+        </SaasGrid>
       </div>
     );
   }
@@ -62,13 +70,13 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
   };
 
   return (
-    <div className="space-y-8 p-6">
-      {/* Sentiment Alert Box */}
+    <div className="space-y-8">
+      {/* Sentiment Alert */}
       {sentimentAlert && (
-        <div className="saas-card bg-gradient-to-r from-primary to-blue-600 text-white border-0">
+        <SaasCard variant="gradient">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-semibold mb-2 text-white">센티먼트 알림</h3>
+              <SaasCardTitle className="text-white mb-2">센티먼트 알림</SaasCardTitle>
               <p className="text-blue-100 text-lg">
                 {sentimentAlert.commodity}: 점수 {sentimentAlert.currentScore} 
                 <span className={`ml-2 font-semibold ${sentimentAlert.scoreChange >= 0 ? 'text-green-200' : 'text-red-200'}`}>
@@ -78,34 +86,39 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
             </div>
             <AlertCircle className="w-10 h-10 text-white" />
           </div>
-        </div>
+        </SaasCard>
       )}
 
-      {/* Market Overview Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-neutral-dark">시장 현황</h1>
-        <Badge className="bg-secondary text-white px-4 py-2 text-sm font-medium">
-          실시간 업데이트
-        </Badge>
-      </div>
+      {/* Page Header */}
+      <SaasPageHeader 
+        title="시장 현황"
+        action={
+          <SaasButton variant="secondary" size="sm">
+            실시간 업데이트
+          </SaasButton>
+        }
+      />
 
       {/* Commodity Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <SaasGrid cols={5}>
         {commodities.map((commodity) => (
-          <div 
+          <SaasCard 
             key={commodity.id} 
-            className="saas-card cursor-pointer group"
+            clickable={true}
+            hoverable={true}
             onClick={() => onCommoditySelect(commodity)}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-lg text-neutral-dark">{commodity.name}</h2>
-              <div className={`w-4 h-4 rounded-full ${
-                commodity.sentimentScore >= 70 ? 'bg-sentiment-positive' : 
-                commodity.sentimentScore >= 50 ? 'bg-warning' : 'bg-sentiment-negative'
-              }`}></div>
-            </div>
+            <SaasCardHeader>
+              <div className="flex items-center justify-between">
+                <SaasCardTitle className="text-lg">{commodity.name}</SaasCardTitle>
+                <div className={`w-4 h-4 rounded-full ${
+                  commodity.sentimentScore >= 70 ? 'bg-sentiment-positive' : 
+                  commodity.sentimentScore >= 50 ? 'bg-warning' : 'bg-sentiment-negative'
+                }`}></div>
+              </div>
+            </SaasCardHeader>
             
-            <div className="space-y-3">
+            <SaasCardContent>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-neutral font-medium">센티먼트 점수</span>
                 <span className="text-2xl font-bold text-primary">{commodity.sentimentScore.toFixed(1)}</span>
@@ -133,20 +146,20 @@ export default function MarketOverview({ onCommoditySelect }: MarketOverviewProp
                   )}
                 </div>
               </div>
-            </div>
-            
-            <div className="mt-4 pt-4 border-t border-neutral">
-              <div className="flex flex-wrap gap-2">
-                {commodity.keywords.slice(0, 2).map((keyword, index) => (
-                  <span key={index} className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">
-                    {keyword}
-                  </span>
-                ))}
+              
+              <div className="pt-3 border-t border-neutral">
+                <div className="flex flex-wrap gap-2">
+                  {commodity.keywords.slice(0, 2).map((keyword, index) => (
+                    <span key={index} className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
+            </SaasCardContent>
+          </SaasCard>
         ))}
-      </div>
+      </SaasGrid>
     </div>
   );
 }

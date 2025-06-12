@@ -31,6 +31,8 @@ export default {
         },
         'card-bg': '#FFFFFF',
         'background-main': '#F9FAFB',
+        
+        // Keep shadcn compatibility
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {

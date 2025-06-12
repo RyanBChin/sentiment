@@ -109,22 +109,22 @@ export default function Chatbot() {
   ];
 
   return (
-    <div className="w-screen h-screen max-w-[1920px] max-h-[1080px] mx-auto overflow-hidden">
+    <div className="w-screen h-screen overflow-hidden max-w-[1920px] max-h-[1080px] mx-auto">
       {/* Two Column Layout - No Scroll */}
-      <div className="grid grid-cols-3 gap-8 h-full p-8">
+      <div className="grid grid-cols-3 gap-6 h-full p-6">
         
         {/* Left Column - Chat Area (2/3 width) */}
         <div className="col-span-2 flex flex-col">
           
           {/* Chat Header */}
-          <Card className="mb-6 flex-shrink-0 bg-white rounded-lg shadow p-6">
+          <Card className="mb-4 flex-shrink-0 bg-white rounded-lg shadow p-4">
             <CardHeader className="pb-0 p-0">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Bot className="w-6 h-6 mr-3 text-blue-600" />
+                  <Bot className="w-5 h-5 mr-2 text-blue-600" />
                   <div>
-                    <h1 className="text-xl font-bold text-gray-900">AI 시장 분석 챗봇</h1>
-                    <p className="text-sm text-gray-600 font-normal">실시간 시장 데이터와 전문가 분석을 기반으로 답변드립니다</p>
+                    <h1 className="text-lg font-bold text-gray-900">AI 시장 분석 챗봇</h1>
+                    <p className="text-xs text-gray-600 font-normal">실시간 시장 데이터와 전문가 분석을 기반으로 답변드립니다</p>
                   </div>
                 </div>
                 <div className="flex space-x-2">
@@ -137,11 +137,11 @@ export default function Chatbot() {
           </Card>
 
           {/* Chat Container - Fixed Height */}
-          <Card className="flex-1 flex flex-col min-h-0 bg-white rounded-lg shadow">
-            <CardContent className="p-6 flex flex-col h-full">
+          <Card className="flex-1 flex flex-col min-h-0 bg-white rounded-lg shadow h-[780px]">
+            <CardContent className="p-4 flex flex-col h-full">
               
               {/* Chat Messages - Fixed Height with Scroll */}
-              <div className="flex-1 overflow-y-auto mb-4 p-4 bg-gray-50 rounded-lg space-y-4 max-h-[700px]">
+              <div className="flex-1 overflow-y-auto mb-3 p-3 bg-gray-50 rounded-lg space-y-3 h-[600px]">
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -204,15 +204,15 @@ export default function Chatbot() {
 
               {/* Suggested Questions - Limited to 2 lines */}
               {messages.length === 0 && (
-                <div className="mb-4 flex-shrink-0">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">추천 질문</h4>
-                  <div className="flex flex-wrap gap-2 max-h-[80px] overflow-y-auto">
-                    {suggestedQuestions.map((question, index) => (
+                <div className="mb-3 flex-shrink-0">
+                  <h4 className="text-xs font-medium text-gray-700 mb-2">추천 질문</h4>
+                  <div className="flex flex-wrap gap-1 max-h-[60px] overflow-hidden">
+                    {suggestedQuestions.slice(0, 4).map((question, index) => (
                       <Button
                         key={index}
                         variant="outline"
                         size="sm"
-                        className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors flex-shrink-0"
+                        className="text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors flex-shrink-0 h-7"
                         onClick={() => {
                           setInputValue(question);
                           handleSubmit(question);
@@ -234,21 +234,21 @@ export default function Chatbot() {
                   placeholder="시장 동향이나 상품 분석에 대해 질문해보세요..."
                   onKeyPress={(e) => e.key === 'Enter' && !chatMutation.isPending && inputValue.trim() && handleSubmit(inputValue)}
                   disabled={chatMutation.isPending}
-                  className="flex-1"
+                  className="flex-1 h-9"
                 />
                 <Button 
                   variant="outline"
                   size="sm"
                   onClick={handleSpeechInput}
                   disabled={chatMutation.isPending}
-                  className="px-3"
+                  className="px-2 h-9"
                 >
                   <Mic className="w-4 h-4" />
                 </Button>
                 <Button 
                   onClick={() => handleSubmit(inputValue)} 
                   disabled={chatMutation.isPending || !inputValue.trim()}
-                  className="px-4"
+                  className="px-3 h-9"
                 >
                   {chatMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -262,27 +262,27 @@ export default function Chatbot() {
         </div>
 
         {/* Right Column - Sidebar Information (1/3 width) */}
-        <div className="col-span-1 flex flex-col space-y-6">
+        <div className="col-span-1 flex flex-col space-y-4 h-full overflow-hidden">
           
           {/* Today's Market Summary */}
-          <Card className="bg-white rounded-lg shadow p-6">
-            <CardHeader className="pb-4 p-0">
-              <CardTitle className="text-lg font-semibold flex items-center">
-                <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
+          <Card className="bg-white rounded-lg shadow p-4 h-[220px]">
+            <CardHeader className="pb-2 p-0">
+              <CardTitle className="text-base font-semibold flex items-center">
+                <TrendingUp className="w-4 h-4 mr-2 text-blue-600" />
                 오늘의 시장
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="space-y-3">
+            <CardContent className="p-0 overflow-hidden">
+              <div className="space-y-2">
                 {sentimentAlert && (
-                  <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center space-x-2 p-2 bg-blue-50 rounded-lg">
                     {sentimentAlert.scoreChange >= 0 ? (
-                      <ArrowUp className="w-4 h-4 text-green-600" />
+                      <ArrowUp className="w-3 h-3 text-green-600" />
                     ) : (
-                      <ArrowDown className="w-4 h-4 text-red-600" />
+                      <ArrowDown className="w-3 h-3 text-red-600" />
                     )}
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-xs font-medium text-gray-900">
                         {sentimentAlert.commodity}
                       </p>
                       <p className="text-xs text-gray-600">
@@ -292,36 +292,38 @@ export default function Chatbot() {
                   </div>
                 )}
                 
-                {commodities && commodities.slice(0, 5).map((commodity, index) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">{commodity.name}</span>
-                    <div className="flex items-center space-x-1">
-                      <span className={`text-sm font-medium ${commodity.priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {commodity.priceChange >= 0 ? '+' : ''}{commodity.priceChange}%
-                      </span>
-                      {commodity.priceChange >= 0 ? (
-                        <TrendingUp className="w-3 h-3 text-green-600" />
-                      ) : (
-                        <TrendingDown className="w-3 h-3 text-red-600" />
-                      )}
+                <div className="space-y-1 max-h-[120px] overflow-hidden">
+                  {commodities && commodities.slice(0, 5).map((commodity, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-xs text-gray-600">{commodity.name}</span>
+                      <div className="flex items-center space-x-1">
+                        <span className={`text-xs font-medium ${commodity.priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {commodity.priceChange >= 0 ? '+' : ''}{commodity.priceChange}%
+                        </span>
+                        {commodity.priceChange >= 0 ? (
+                          <TrendingUp className="w-3 h-3 text-green-600" />
+                        ) : (
+                          <TrendingDown className="w-3 h-3 text-red-600" />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Market Keywords */}
-          <Card className="bg-white rounded-lg shadow p-6">
-            <CardHeader className="pb-4 p-0">
-              <CardTitle className="text-lg font-semibold">핵심 키워드</CardTitle>
+          <Card className="bg-white rounded-lg shadow p-4 h-[140px]">
+            <CardHeader className="pb-2 p-0">
+              <CardTitle className="text-base font-semibold">핵심 키워드</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1 max-h-[90px] overflow-hidden">
                 {['가뭄', '공급부족', '안전자산', '인플레이션', '전기차', '지정학'].map((keyword, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium"
+                    className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium"
                   >
                     {keyword}
                   </span>
@@ -331,12 +333,12 @@ export default function Chatbot() {
           </Card>
 
           {/* Latest News Headlines */}
-          <Card className="bg-white rounded-lg shadow p-6 flex-1">
-            <CardHeader className="pb-4 p-0">
-              <CardTitle className="text-lg font-semibold">실시간 뉴스</CardTitle>
+          <Card className="bg-white rounded-lg shadow p-4 h-[220px]">
+            <CardHeader className="pb-2 p-0">
+              <CardTitle className="text-base font-semibold">실시간 뉴스</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="space-y-3 max-h-[200px] overflow-y-auto">
+              <div className="space-y-2 max-h-[170px] overflow-y-auto">
                 {[
                   { title: "글로벌 밀 공급 부족 우려 심화로 가격 급등", time: "2시간 전" },
                   { title: "구리 가격 급등, 전기차 수요 급증 영향", time: "4시간 전" },
@@ -344,7 +346,7 @@ export default function Chatbot() {
                   { title: "WTI 원유 70달러 돌파 전망", time: "8시간 전" },
                   { title: "옥수수 선물 가격 변동성 확대", time: "10시간 전" }
                 ].map((news, index) => (
-                  <div key={index} className="text-sm">
+                  <div key={index} className="text-xs">
                     <p className="text-gray-900 font-medium leading-tight">
                       {news.title}
                     </p>
@@ -356,14 +358,14 @@ export default function Chatbot() {
           </Card>
 
           {/* Recent Chat History */}
-          <Card className="bg-white rounded-lg shadow p-6">
-            <CardHeader className="pb-4 p-0">
-              <CardTitle className="text-lg font-semibold">최근 대화</CardTitle>
+          <Card className="bg-white rounded-lg shadow p-4 flex-1">
+            <CardHeader className="pb-2 p-0">
+              <CardTitle className="text-base font-semibold">최근 대화</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="space-y-3 max-h-[160px] overflow-y-auto">
+              <div className="space-y-2 max-h-[140px] overflow-y-auto">
                 {recentConversations.map((conversation, index) => (
-                  <div key={index} className="text-sm cursor-pointer hover:bg-gray-50 p-2 rounded">
+                  <div key={index} className="text-xs cursor-pointer hover:bg-gray-50 p-2 rounded">
                     <p className="text-gray-900 font-medium">
                       {conversation.question}
                     </p>
@@ -372,11 +374,11 @@ export default function Chatbot() {
                     </p>
                   </div>
                 ))}
-                <div className="text-sm cursor-pointer hover:bg-gray-50 p-2 rounded">
+                <div className="text-xs cursor-pointer hover:bg-gray-50 p-2 rounded">
                   <p className="text-gray-900 font-medium">WTI 오일 가격 변동 원인은?</p>
                   <p className="text-gray-500 text-xs mt-1">지정학적 리스크와 공급 부족</p>
                 </div>
-                <div className="text-sm cursor-pointer hover:bg-gray-50 p-2 rounded">
+                <div className="text-xs cursor-pointer hover:bg-gray-50 p-2 rounded">
                   <p className="text-gray-900 font-medium">구리 시장 전망은 어떤가요?</p>
                   <p className="text-gray-500 text-xs mt-1">중국 수요 증가로 긍정적</p>
                 </div>

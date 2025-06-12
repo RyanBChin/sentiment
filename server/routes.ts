@@ -1,7 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertChatMessageSchema, insertEmailAlertSchema } from "@shared/schema";
+import { 
+  insertChatMessageSchema, 
+  insertEmailAlertSchema,
+  insertRawNewsSchema,
+  insertNewsAnalysisResultsSchema,
+  insertDailyMarketSummarySchema,
+  insertPriceHistorySchema
+} from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   

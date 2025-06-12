@@ -49,6 +49,25 @@ export interface IStorage {
   // Email Alerts
   createEmailAlert(alert: InsertEmailAlert): Promise<EmailAlert>;
   getEmailAlerts(): Promise<EmailAlert[]>;
+  
+  // Raw News - 뉴스 원문 수집
+  createRawNews(rawNews: InsertRawNews): Promise<RawNews>;
+  getRawNews(id: number): Promise<RawNews | undefined>;
+  getRawNewsByStatus(analysisStatus: boolean): Promise<RawNews[]>;
+  updateRawNewsStatus(id: number, analysisStatus: boolean): Promise<void>;
+  
+  // News Analysis Results - 단일 기사 분석 결과
+  createNewsAnalysisResult(analysis: InsertNewsAnalysisResults): Promise<NewsAnalysisResults>;
+  getNewsAnalysisResults(rawNewsId: number): Promise<NewsAnalysisResults[]>;
+  
+  // Daily Market Summary - 일별 종합 분석
+  createDailyMarketSummary(summary: InsertDailyMarketSummary): Promise<DailyMarketSummary>;
+  getDailyMarketSummary(date: string, commodity: string): Promise<DailyMarketSummary | undefined>;
+  getDailyMarketSummaries(commodity?: string): Promise<DailyMarketSummary[]>;
+  
+  // Price History - 가격 데이터
+  createPriceHistory(priceData: InsertPriceHistory): Promise<PriceHistory>;
+  getPriceHistory(commodity: string, startDate?: string, endDate?: string): Promise<PriceHistory[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -395,4 +414,137 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database Storage Implementation
+export class DatabaseStorage implements IStorage {
+  async getCommodities(): Promise<Commodity[]> {
+    return await db.select().from(commodities);
+  }
+
+  async getCommodity(id: number): Promise<Commodity | undefined> {
+    const [commodity] = await db.select().from(commodities).where(eq(commodities.id, id));
+    return commodity || undefined;
+  }
+
+  async getCommodityHistory(commodityId: number): Promise<CommodityHistory[]> {
+    return await db.select().from(commodityHistory).where(eq(commodityHistory.commodityId, commodityId));
+  }
+
+  async getSentimentAlert(): Promise<any> {
+    // Return a mock sentiment alert for now
+    const commodityList = await this.getCommodities();
+    if (commodityList.length > 0) {
+      const randomCommodity = commodityList[Math.floor(Math.random() * commodityList.length)];
+      return {
+        commodityId: randomCommodity.id,
+        commodity: randomCommodity.name,
+        englishName: randomCommodity.englishName,
+        currentScore: randomCommodity.sentimentScore,
+        scoreChange: Math.floor(Math.random() * 20) - 10,
+        timestamp: new Date().toISOString()
+      };
+    }
+    return null;
+  }
+
+  async getNewsByCommodity(commodityId: number): Promise<News[]> {
+    return await db.select().from(news).where(eq(news.commodityId, commodityId));
+  }
+
+  async getNews(id: number): Promise<News | undefined> {
+    const [newsItem] = await db.select().from(news).where(eq(news.id, id));
+    return newsItem || undefined;
+  }
+
+  async getLatestNews(): Promise<News[]> {
+    return await db.select().from(news).orderBy(desc(news.publishedAt)).limit(10);
+  }
+
+  async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
+    const [chatMessage] = await db.insert(chatMessages).values(message).returning();
+    return chatMessage;
+  }
+
+  async getChatMessages(): Promise<ChatMessage[]> {
+    return await db.select().from(chatMessages).orderBy(desc(chatMessages.createdAt));
+  }
+
+  async createEmailAlert(alert: InsertEmailAlert): Promise<EmailAlert> {
+    const [emailAlert] = await db.insert(emailAlerts).values(alert).returning();
+    return emailAlert;
+  }
+
+  async getEmailAlerts(): Promise<EmailAlert[]> {
+    return await db.select().from(emailAlerts).orderBy(desc(emailAlerts.createdAt));
+  }
+
+  // Raw News Methods
+  async createRawNews(rawNewsData: InsertRawNews): Promise<RawNews> {
+    const [rawNewsItem] = await db.insert(rawNews).values(rawNewsData).returning();
+    return rawNewsItem;
+  }
+
+  async getRawNews(id: number): Promise<RawNews | undefined> {
+    const [rawNewsItem] = await db.select().from(rawNews).where(eq(rawNews.id, id));
+    return rawNewsItem || undefined;
+  }
+
+  async getRawNewsByStatus(analysisStatus: boolean): Promise<RawNews[]> {
+    return await db.select().from(rawNews).where(eq(rawNews.analysisStatus, analysisStatus));
+  }
+
+  async updateRawNewsStatus(id: number, analysisStatus: boolean): Promise<void> {
+    await db.update(rawNews).set({ analysisStatus }).where(eq(rawNews.id, id));
+  }
+
+  // News Analysis Results Methods
+  async createNewsAnalysisResult(analysis: InsertNewsAnalysisResults): Promise<NewsAnalysisResults> {
+    const [analysisResult] = await db.insert(newsAnalysisResults).values(analysis).returning();
+    return analysisResult;
+  }
+
+  async getNewsAnalysisResults(rawNewsId: number): Promise<NewsAnalysisResults[]> {
+    return await db.select().from(newsAnalysisResults).where(eq(newsAnalysisResults.rawNewsId, rawNewsId));
+  }
+
+  // Daily Market Summary Methods
+  async createDailyMarketSummary(summary: InsertDailyMarketSummary): Promise<DailyMarketSummary> {
+    const [marketSummary] = await db.insert(dailyMarketSummary).values(summary).returning();
+    return marketSummary;
+  }
+
+  async getDailyMarketSummary(date: string, commodity: string): Promise<DailyMarketSummary | undefined> {
+    const [summary] = await db.select().from(dailyMarketSummary)
+      .where(and(eq(dailyMarketSummary.date, date), eq(dailyMarketSummary.commodity, commodity)));
+    return summary || undefined;
+  }
+
+  async getDailyMarketSummaries(commodity?: string): Promise<DailyMarketSummary[]> {
+    if (commodity) {
+      return await db.select().from(dailyMarketSummary)
+        .where(eq(dailyMarketSummary.commodity, commodity))
+        .orderBy(desc(dailyMarketSummary.date));
+    }
+    return await db.select().from(dailyMarketSummary).orderBy(desc(dailyMarketSummary.date));
+  }
+
+  // Price History Methods
+  async createPriceHistory(priceData: InsertPriceHistory): Promise<PriceHistory> {
+    const [priceHistoryItem] = await db.insert(priceHistory).values(priceData).returning();
+    return priceHistoryItem;
+  }
+
+  async getPriceHistory(commodity: string, startDate?: string, endDate?: string): Promise<PriceHistory[]> {
+    let query = db.select().from(priceHistory).where(eq(priceHistory.commodity, commodity));
+    
+    if (startDate && endDate) {
+      query = query.where(and(
+        eq(priceHistory.commodity, commodity),
+        // Add date range filtering if needed
+      ));
+    }
+    
+    return await query.orderBy(desc(priceHistory.date));
+  }
+}
+
+export const storage = new DatabaseStorage();

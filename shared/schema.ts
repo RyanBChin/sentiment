@@ -12,6 +12,14 @@ export const commodities = pgTable("commodities", {
   keywords: text("keywords").array().notNull(),
 });
 
+export const commodityHistory = pgTable("commodity_history", {
+  id: serial("id").primaryKey(),
+  commodityId: integer("commodity_id").references(() => commodities.id),
+  date: text("date").notNull(),
+  sentimentScore: real("sentiment_score").notNull(),
+  price: real("price").notNull(),
+});
+
 export const news = pgTable("news", {
   id: serial("id").primaryKey(),
   commodityId: integer("commodity_id").references(() => commodities.id),
@@ -50,6 +58,10 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   id: true,
 });
 
+export const insertCommodityHistorySchema = createInsertSchema(commodityHistory).omit({
+  id: true,
+});
+
 export const insertEmailAlertSchema = createInsertSchema(emailAlerts).omit({
   id: true,
 }).extend({
@@ -57,10 +69,12 @@ export const insertEmailAlertSchema = createInsertSchema(emailAlerts).omit({
 });
 
 export type Commodity = typeof commodities.$inferSelect;
+export type CommodityHistory = typeof commodityHistory.$inferSelect;
 export type News = typeof news.$inferSelect;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type EmailAlert = typeof emailAlerts.$inferSelect;
 export type InsertCommodity = z.infer<typeof insertCommoditySchema>;
+export type InsertCommodityHistory = z.infer<typeof insertCommodityHistorySchema>;
 export type InsertNews = z.infer<typeof insertNewsSchema>;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type InsertEmailAlert = z.infer<typeof insertEmailAlertSchema>;

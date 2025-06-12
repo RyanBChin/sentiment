@@ -1,13 +1,16 @@
 import { 
   commodities, 
+  commodityHistory,
   news, 
   chatMessages, 
   emailAlerts,
   type Commodity, 
+  type CommodityHistory,
   type News, 
   type ChatMessage, 
   type EmailAlert,
   type InsertCommodity,
+  type InsertCommodityHistory,
   type InsertNews,
   type InsertChatMessage,
   type InsertEmailAlert
@@ -17,6 +20,7 @@ export interface IStorage {
   // Commodities
   getCommodities(): Promise<Commodity[]>;
   getCommodity(id: number): Promise<Commodity | undefined>;
+  getCommodityHistory(commodityId: number): Promise<CommodityHistory[]>;
   
   // News
   getNewsByCommodity(commodityId: number): Promise<News[]>;
@@ -33,20 +37,24 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private commodities: Map<number, Commodity>;
+  private commodityHistory: Map<number, CommodityHistory[]>;
   private news: Map<number, News>;
   private chatMessages: Map<number, ChatMessage>;
   private emailAlerts: Map<number, EmailAlert>;
   private currentCommodityId: number;
+  private currentHistoryId: number;
   private currentNewsId: number;
   private currentChatId: number;
   private currentAlertId: number;
 
   constructor() {
     this.commodities = new Map();
+    this.commodityHistory = new Map();
     this.news = new Map();
     this.chatMessages = new Map();
     this.emailAlerts = new Map();
     this.currentCommodityId = 1;
+    this.currentHistoryId = 1;
     this.currentNewsId = 1;
     this.currentChatId = 1;
     this.currentAlertId = 1;
@@ -108,6 +116,9 @@ export class MemStorage implements IStorage {
       this.commodities.set(commodity.id, commodity);
       this.currentCommodityId = Math.max(this.currentCommodityId, commodity.id + 1);
     });
+
+    // Generate historical data for the last 14 days
+    this.generateHistoricalData();
 
     // Initialize news data
     const newsData: News[] = [
@@ -234,12 +245,54 @@ export class MemStorage implements IStorage {
     });
   }
 
+  private generateHistoricalData() {
+    const commodityIds = [1, 2, 3, 4, 5];
+    const baseData = {
+      1: { basePrice: 600, baseScore: 85 }, // Corn
+      2: { basePrice: 340, baseScore: 45 }, // Wheat
+      3: { basePrice: 8200, baseScore: 76 }, // Copper
+      4: { basePrice: 75, baseScore: 58 }, // WTI
+      5: { basePrice: 1940, baseScore: 82 } // Gold
+    };
+
+    commodityIds.forEach(commodityId => {
+      const history: CommodityHistory[] = [];
+      const base = baseData[commodityId as keyof typeof baseData];
+      
+      for (let i = 13; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        // Generate realistic fluctuations
+        const priceFactor = 1 + (Math.random() - 0.5) * 0.1; // ±5% variation
+        const scoreFactor = 1 + (Math.random() - 0.5) * 0.2; // ±10% variation
+        
+        const historyItem: CommodityHistory = {
+          id: this.currentHistoryId++,
+          commodityId,
+          date: dateStr,
+          price: Number((base.basePrice * priceFactor).toFixed(2)),
+          sentimentScore: Number((base.baseScore * scoreFactor).toFixed(1))
+        };
+        
+        history.push(historyItem);
+      }
+      
+      this.commodityHistory.set(commodityId, history);
+    });
+  }
+
   async getCommodities(): Promise<Commodity[]> {
     return Array.from(this.commodities.values());
   }
 
   async getCommodity(id: number): Promise<Commodity | undefined> {
     return this.commodities.get(id);
+  }
+
+  async getCommodityHistory(commodityId: number): Promise<CommodityHistory[]> {
+    return this.commodityHistory.get(commodityId) || [];
   }
 
   async getNewsByCommodity(commodityId: number): Promise<News[]> {
